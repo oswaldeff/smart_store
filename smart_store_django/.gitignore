@@ -1,7 +1,7 @@
 # gitignore
 
 # kakao DEV API
-smart_store/smart_store_django/smart_store_solution/my_settings.py
+smart_store/smart_store_django/smart_store_project/my_settings.py
 
 # vscode setting
 smart_store/smart_store_django/.vscode
