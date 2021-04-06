@@ -16,20 +16,30 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from smart_store_solution import views
-from rest_framework import routers
+# from rest_framework import routers
 
 # router = routers.DefaultRouter()
-# router.register('Users', view.UserViewSet)
-# router.register('Merchandises', view.MerchandiseViewSet)
+# router.register('Users', views.UserViewSet)
+# router.register('Merchandises', views.MerchandiseViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     
-    # auth
-    #path('account/', include('rest_auth.urls')),
-    path('account/registration/', include('rest_auth.registration.urls')),
+    # path('account/', include('rest_auth.urls')),
+    # path('account/registration/', include('rest_auth.registration.urls')),
     path('account/', include('allauth.urls')),
-    # path('', include(router.urls)),
+    
+    # rest API
+    path('Users/', views.UserRestfulMain.as_view(), name='Users_list'),
+    path('Users/detail/<User_pk>/', views.UserRestfulDetail.as_view(), name='Users_detail'),
+    path('Users/detail/<User_pk>/delete/', views.UserRestfulDelete.as_view(), name='Users_delete'),
+    
+    path('Merchandises/', views.MerchandiseRestfulMain.as_view(), name='Merchandises_list'),
+    path('Merchandises/create/', views.MerchandiseRestfulCreate.as_view(), name='Merchandises_create'),
+    path('Merchandises/detail/<User_pk>/<id>/', views.MerchandiseRestfulDetail.as_view(), name='Merchandises_detail'),
+    path('Merchandises/detail/<User_pk>/<id>/update/', views.MerchandiseRestfulUpdate.as_view(), name='Merchandises_update'),
+    path('Merchandises/detail/<User_pk>/<id>/delete/', views.MerchandiseRestfulDelete.as_view(), name='Merchandises_delete'),
+    
     # kakao login
     path('account/login/kakao/', views.kakao_login, name='kakao_login'),
     path('account/login/kakao/callback/', views.kakao_callback, name='kakao_callback'),

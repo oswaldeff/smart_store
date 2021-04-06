@@ -3,19 +3,19 @@ from django.db import models
 # Create your models here.
 
 class User(models.Model):
-    id = models.AutoField(primary_key=True)
+    User_pk = models.AutoField(primary_key=True)
     kakao_id = models.IntegerField()
     nickname = models.CharField(max_length=40, null=True)
     
     def __str__(self):
-        return self.nickname
+        return str(self.kakao_id)
     
     class Meta:
         db_table = 'Users'
 
 class Merchandise(models.Model):
     id = models.AutoField(primary_key=True)
-    User_id = models.ForeignKey(User, on_delete=models.CASCADE, db_column='User_id')
+    User_pk = models.ForeignKey(User, on_delete=models.CASCADE, db_column='User_pk')
     item_name = models.CharField(max_length=255, null=True)
     country_from = models.CharField(max_length=255, null=True)
     item_currency = models.CharField(max_length=255, null=True)
