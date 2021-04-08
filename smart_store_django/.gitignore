@@ -1,4 +1,5 @@
 # gitignore
+## if not operate: git rm -r --cached .
 
 # kakao DEV API
 my_settings.py
