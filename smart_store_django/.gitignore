@@ -1,10 +1,10 @@
 # gitignore
 
 # kakao DEV API
-~/smart_store_project/my_settings.py
+my_settings.py
 
 # vscode setting
-~/.vscode
+.vscode
 
 # MAC OS meta data
-~/.DS_Store
+.DS_Store
