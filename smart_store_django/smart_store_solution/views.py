@@ -8,6 +8,7 @@ from .models import User, Merchandise
 
 # Create your views here.
 
+# multiple lookup fields
 class MultipleFieldLookupMixin:
     """
     Apply this mixin to any view or viewset to get multiple field filtering
@@ -34,12 +35,6 @@ class UserRestfulDetail(RetrieveAPIView):
     lookup_field = 'User_pk'
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
-
-## Delete
-class UserRestfulDelete(DestroyAPIView):
-    lookup_field = 'User_pk'
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
 
 # Merchandise classes
 ## Create
@@ -73,10 +68,12 @@ class MerchandiseRestfulDelete(DestroyAPIView):
 APP_REST_API_KEY = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
 KAKAO_CALLBACK_URI = 'http://127.0.0.1:8000/account/login/kakao/callback'
 
+## login
 def kakao_login(request):
     api_key = APP_REST_API_KEY
     redirect_uri = KAKAO_CALLBACK_URI
     dest_url = f'https://kauth.kakao.com/oauth/authorize?client_id={api_key}&redirect_uri={redirect_uri}&response_type=code'
+    
     return redirect(dest_url)
 
 def kakao_callback(request):
@@ -87,17 +84,22 @@ def kakao_callback(request):
     response = requests.post(dest_url)
     response_json= response.json()
     
-    # session
+    # create session
     request.session['access_token'] = response_json['access_token']
     request.session.modified = True
     access_token = request.session['access_token']
-    profile_request = requests.get('https://kapi.kakao.com/v2/user/me', headers={'Authorization' : f'Bearer {access_token}'})
+    profile_request = requests.get(
+        'https://kapi.kakao.com/v2/user/me', 
+        headers={'Authorization' : f'Bearer {access_token}'}
+        )
     profile_json = profile_request.json()
     
-    # User check
+    # User
+    ## check
     User_search = User.objects.filter(
         kakao_id = profile_json['id']
         )
+    ## create
     if len(User_search) == 0:
         User.objects.create(
             kakao_id = profile_json['id'],
@@ -106,17 +108,37 @@ def kakao_callback(request):
     
     return JsonResponse(response_json)
 
+## logout
 def kakao_logout(request):
+    api_key = APP_REST_API_KEY
+    redirect_uri = 'http://127.0.0.1:8000/'
     access_token = request.session['access_token']
-    destination_url = 'https://kapi.kakao.com/v1/user/logout'
-    header = {
-        'Authorization': f'bearer {access_token}'
-    }
-    # destination_url = 'https://kapi.kakao.com/v1/user/unlink'
-    # header = {
-    #     'Authorization': f'bearer {access_token}',
-    # }
-    response = requests.post(destination_url, headers=header)
-    response_json = response.json()
+    dest_url = f'https://kauth.kakao.com/oauth/logout?client_id={api_key}&logout_redirect_uri={redirect_uri}'
+    response = requests.get(dest_url)
+    
+    # del session
     del request.session['access_token']
+    
+    return redirect(dest_url)
+
+## leave service
+def User_delete(request):
+    access_token = request.session['access_token']
+    profile_request = requests.get(
+        'https://kapi.kakao.com/v2/user/me',
+        headers={'Authorization' : f'Bearer {access_token}'})
+    profile_json = profile_request.json()
+    
+    dest_url = 'https://kapi.kakao.com/v1/user/unlink'
+    response = requests.post(dest_url)
+    
+    # del User
+    User_search = User.objects.filter(
+        kakao_id = profile_json['id']
+        )
+    User_search.delete()
+    
+    # del session
+    del request.session['access_token']
+    
     return redirect('http://127.0.0.1:8000/')

@@ -32,7 +32,6 @@ urlpatterns = [
     # rest API
     path('Users/', views.UserRestfulMain.as_view(), name='Users_list'),
     path('Users/detail/<User_pk>/', views.UserRestfulDetail.as_view(), name='Users_detail'),
-    path('Users/detail/<User_pk>/delete/', views.UserRestfulDelete.as_view(), name='Users_delete'),
     
     path('Merchandises/', views.MerchandiseRestfulMain.as_view(), name='Merchandises_list'),
     path('Merchandises/create/', views.MerchandiseRestfulCreate.as_view(), name='Merchandises_create'),
@@ -44,4 +43,5 @@ urlpatterns = [
     path('account/login/kakao/', views.kakao_login, name='kakao_login'),
     path('account/login/kakao/callback/', views.kakao_callback, name='kakao_callback'),
     path('account/logout/kakao/', views.kakao_logout, name='kakao_logout'),
+    path('account/delete/', views.User_delete, name='User_delete')
 ]
