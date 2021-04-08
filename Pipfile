@@ -11,6 +11,8 @@ django-rest-auth = "*"
 django-allauth = "*"
 djangorestframework-jwt = "*"
 requests = "*"
+pymysql = "*"
+django-mysql = "*"
 
 [dev-packages]
 

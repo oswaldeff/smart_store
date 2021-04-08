@@ -64,21 +64,17 @@ class MerchandiseRestfulDelete(DestroyAPIView):
     serializer_class = MerchandiseSerializer
 
 # social login(kakao)
-## source
-APP_REST_API_KEY = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
-KAKAO_CALLBACK_URI = 'http://127.0.0.1:8000/account/login/kakao/callback'
-
 ## login
 def kakao_login(request):
-    api_key = APP_REST_API_KEY
-    redirect_uri = KAKAO_CALLBACK_URI
+    api_key = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
+    redirect_uri = 'http://127.0.0.1:8000/account/login/kakao/callback'
     dest_url = f'https://kauth.kakao.com/oauth/authorize?client_id={api_key}&redirect_uri={redirect_uri}&response_type=code'
     
     return redirect(dest_url)
 
 def kakao_callback(request):
-    api_key = APP_REST_API_KEY
-    redirect_uri = KAKAO_CALLBACK_URI
+    api_key = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
+    redirect_uri = 'http://127.0.0.1:8000/account/login/kakao/callback'
     code = request.GET['code']
     dest_url = f'https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={api_key}&redirect_uri={redirect_uri}&code={code}'
     response = requests.post(dest_url)
@@ -110,7 +106,7 @@ def kakao_callback(request):
 
 ## logout
 def kakao_logout(request):
-    api_key = APP_REST_API_KEY
+    api_key = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
     redirect_uri = 'http://127.0.0.1:8000/'
     access_token = request.session['access_token']
     dest_url = f'https://kauth.kakao.com/oauth/logout?client_id={api_key}&logout_redirect_uri={redirect_uri}'

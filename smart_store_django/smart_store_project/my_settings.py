@@ -13,3 +13,15 @@ SOCIALACCOUNTS = {
         }
     }
 }
+
+DB = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql', #check!
+        'HOST': 'database-smartstore.cnuvjza6zuce.ap-northeast-2.rds.amazonaws.com',
+        'NAME': 'smartstore', #check!
+        'USER': 'admin', #check!
+        'OPTIONS': {'init_command': 'SET sql_mode="STRICT_TRANS_TABLES"'},
+        'PASSWORD': 'YangJune12!', #check!
+        'PORT': '3306' #check!
+    }
+}
