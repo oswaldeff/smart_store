@@ -73,7 +73,7 @@ class MerchandiseCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Merchandise
         fields = (
-            #'id',
+            'id',
             'User_pk',
             'item_name',
             'country_from',

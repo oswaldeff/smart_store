@@ -54,6 +54,7 @@ class MerchandiseRestfulDetail(MultipleFieldLookupMixin, RetrieveAPIView):
 
 ## Update
 class MerchandiseRestfulUpdate(UpdateAPIView):
+    lookup_field = 'id'
     queryset = Merchandise.objects.all()
     serializer_class = MerchandiseSerializer
 
