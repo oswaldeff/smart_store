@@ -16,6 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from smart_store_solution import views
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+# from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify_jwt_token
 # from rest_framework import routers
 
 # router = routers.DefaultRouter()
@@ -25,9 +28,9 @@ from smart_store_solution import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     
-    # path('account/', include('rest_auth.urls')),
-    # path('account/registration/', include('rest_auth.registration.urls')),
-    path('account/', include('allauth.urls')),
+    #path('rest-auth', include('rest_auth.urls')),
+    #path('rest-auth/registration/', include('rest_auth.registration.urls')),
+    #path('account/', include('allauth.urls')),
     
     # rest API
     path('users/', views.UserRestfulMain.as_view(), name='Users_list'),
@@ -43,5 +46,10 @@ urlpatterns = [
     path('account/login/kakao/', views.kakao_login, name='kakao_login'),
     path('account/login/kakao/callback/', views.kakao_callback, name='kakao_callback'),
     path('account/logout/kakao/', views.kakao_logout, name='kakao_logout'),
-    path('account/delete/', views.User_delete, name='User_delete')
+    path('account/delete/', views.User_delete, name='User_delete'),
+    
+    # jwt
+    # path('api-jwt-auth/', obtain_jwt_token),
+    # path('api-jwt-auth/refresh/', refresh_jwt_token),
+    # path('api-jwt-auth/verify/', verify_jwt_token),
 ]

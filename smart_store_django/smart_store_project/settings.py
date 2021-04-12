@@ -41,17 +41,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    # sites
-    'django.contrib.sites',
     # my app
     'smart_store_solution',
     # django-webpack-loader
-    'webpack_loader',
+    #'webpack_loader',
     # django-rest-auth
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
     # django-allauth
+    'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -75,7 +74,11 @@ SITE_ID = 1
 
 SOCIALACCOUNT_PROVIDERS = SOCIALACCOUNTS
 
-# Rest_framework
+# AUTH
+
+#AUTH_USER_MODEL = 'smart_store_solution.User'
+
+# REST_FRAMEWORK
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
@@ -83,18 +86,22 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': [
         #'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        #'rest_framework.authentication.SessionAuthentication',
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     ],
 }
 
+# REST jwt setting
+
+REST_USE_JWT = True
+
 # account setting
 
-SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
-ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
-LOGIN_REDIRECT_URL = "/"
-ACCOUNT_AUTHENTICATED_LOGOUT_REDIRECTS = True
-ACCOUNT_LOGOUT_REDIRECT_URL = "/"
+# SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
+# ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
+# LOGIN_REDIRECT_URL = "/"
+# ACCOUNT_AUTHENTICATED_LOGOUT_REDIRECTS = True
+# ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
