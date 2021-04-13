@@ -13,6 +13,7 @@ djangorestframework-jwt = "*"
 requests = "*"
 pymysql = "*"
 django-mysql = "*"
+pyjwt = "*"
 
 [dev-packages]
 

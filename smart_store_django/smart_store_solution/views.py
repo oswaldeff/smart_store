@@ -5,10 +5,14 @@ from django.http import JsonResponse
 from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView, CreateAPIView
 from .serializers import UserSerializer, UserDetailSerializer, MerchandiseSerializer, MerchandiseDetailSerializer, MerchandiseCreateSerializer
 from .models import User, Merchandise
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+import jwt
+#from rest_framework.decorators import api_view, permission_classes
+#from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
+
+# jwt
+#def authorization_(func):
 
 # multiple lookup fields
 class MultipleFieldLookupMixin:
@@ -26,9 +30,6 @@ class MultipleFieldLookupMixin:
         obj = get_object_or_404(queryset, **filter)  # Lookup the object
         self.check_object_permissions(self.request, obj)
         return obj
-
-# @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
 
 # User classes
 ## Read
@@ -84,7 +85,7 @@ def kakao_callback(request):
     redirect_uri = 'http://127.0.0.1:8000/account/login/kakao/callback'
     code = request.GET['code']
     dest_url = f'https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={api_key}&redirect_uri={redirect_uri}&code={code}'
-    response = requests.post(dest_url)
+    response = requests.get(dest_url)
     response_json= response.json()
     
     # create session
@@ -105,6 +106,12 @@ def kakao_callback(request):
     ## create
     if len(User_search) == 0:
         User.objects.create(kakao_id=kakao_id, nickname=nickname)
+        jwt_token = jwt.encode({'kakao_id': kakao_id}, my_settings.JWT_AUTH['JWT_SECRET_KEY'], algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
+        Authorization = {"access_token": access_token.decode('utf-8')}
+    ## login
+    if len(User_search) != 0:
+        jwt_token = jwt.encode({'kakao_id': kakao_id}, my_settings.JWT_AUTH['JWT_SECRET_KEY'], algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
+        Authorization = {"access_token": access_token.decode('utf-8')}
     
     return JsonResponse(response_json)
 
@@ -131,7 +138,7 @@ def User_delete(request):
     profile_json = profile_request.json()
     
     dest_url = 'https://kapi.kakao.com/v1/user/unlink'
-    response = requests.post(dest_url, headers=headers)
+    response = requests.get(dest_url, headers=headers)
     
     # del User
     User_search = User.objects.filter(
