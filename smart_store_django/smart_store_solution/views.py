@@ -7,12 +7,30 @@ from .serializers import UserSerializer, UserDetailSerializer, MerchandiseSerial
 from .models import User, Merchandise
 import jwt
 #from rest_framework.decorators import api_view, permission_classes
-#from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 # Create your views here.
 
 # jwt
-#def authorization_(func):
+def jwt_publish(kakao_id):
+    access_jwt = jwt.encode({'kakao_id': kakao_id}, my_settings.JWT_AUTH['JWT_SECRET_KEY'], algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
+    return access_jwt
+
+def jwt_authorization(func):
+    def wrapper(self, request, *args, **kwargs):
+        try:
+            access_jwt = request.COOKIES.get('access_jwt')
+            print('access_jwt: ', access_jwt)
+            print('access_jwt decoding................................')
+            payload = jwt.decode(access_jwt, my_settings.JWT_AUTH['JWT_SECRET_KEY'], algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
+            print(payload)
+            login_user = User.objects.get(kakao_id=payload['kakao_id'])
+            print(login_user)
+            request.user = login_user
+        except jwt.exceptions.DecodeError:
+            return JsonResponse({'message':'INVALID_TOKEN'},status=400)
+        return func(self, request, *args, **kwargs)
+    return wrapper
 
 # multiple lookup fields
 class MultipleFieldLookupMixin:
@@ -38,10 +56,16 @@ class UserRestfulMain(ListAPIView):
     serializer_class = UserSerializer
 
 class UserRestfulDetail(RetrieveAPIView):
-    permission_classes = [IsAuthenticated]
+    print('0')
+    permission_classes = [AllowAny]
     lookup_field = 'User_pk'
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
+    print('1')
+    @jwt_authorization
+    def get(self, request, *args, **kwargs):
+        print('2')
+        return self.retrieve(request, *args, **kwargs)
 
 # Merchandise classes
 ## Create
@@ -106,14 +130,16 @@ def kakao_callback(request):
     ## create
     if len(User_search) == 0:
         User.objects.create(kakao_id=kakao_id, nickname=nickname)
-        jwt_token = jwt.encode({'kakao_id': kakao_id}, my_settings.JWT_AUTH['JWT_SECRET_KEY'], algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
-        Authorization = {"access_token": access_token.decode('utf-8')}
+        access_jwt = jwt_publish(kakao_id)
+    
     ## login
     if len(User_search) != 0:
-        jwt_token = jwt.encode({'kakao_id': kakao_id}, my_settings.JWT_AUTH['JWT_SECRET_KEY'], algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
-        Authorization = {"access_token": access_token.decode('utf-8')}
+        access_jwt = jwt_publish(kakao_id)
+    print("access_jwt: ", access_jwt)
+    response_token = JsonResponse(response_json)
+    response_token.set_cookie('access_jwt', access_jwt)
     
-    return JsonResponse(response_json)
+    return response_token
 
 ## logout
 def kakao_logout(request):

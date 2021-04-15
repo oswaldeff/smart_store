@@ -18,7 +18,6 @@ from django.urls import path, include
 from smart_store_solution import views
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-# from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify_jwt_token
 # from rest_framework import routers
 
 # router = routers.DefaultRouter()
