@@ -14,6 +14,9 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 # jwt
 def jwt_publish(kakao_id):
     access_jwt = jwt.encode({'kakao_id': kakao_id}, my_settings.JWT_AUTH['JWT_SECRET_KEY'], algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
+    print("1. access_jwt: ", access_jwt)
+    access_jwt = access_jwt.decode('utf-8')
+    print("2. access_jwt: ", access_jwt)
     return access_jwt
 
 def jwt_authorization(func):
@@ -22,13 +25,16 @@ def jwt_authorization(func):
             access_jwt = request.COOKIES.get('access_jwt')
             print('access_jwt: ', access_jwt)
             print('access_jwt decoding................................')
+            #access_jwt = access_jwt.decode('utf-8')
             payload = jwt.decode(access_jwt, my_settings.JWT_AUTH['JWT_SECRET_KEY'], algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
+            print("here!!!!!!!!!")
             print(payload)
             login_user = User.objects.get(kakao_id=payload['kakao_id'])
             print(login_user)
             request.user = login_user
         except jwt.exceptions.DecodeError:
             return JsonResponse({'message':'INVALID_TOKEN'},status=400)
+        print('pass')
         return func(self, request, *args, **kwargs)
     return wrapper
 
@@ -56,12 +62,10 @@ class UserRestfulMain(ListAPIView):
     serializer_class = UserSerializer
 
 class UserRestfulDetail(RetrieveAPIView):
-    print('0')
     permission_classes = [AllowAny]
     lookup_field = 'User_pk'
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
-    print('1')
     @jwt_authorization
     def get(self, request, *args, **kwargs):
         print('2')
@@ -137,7 +141,7 @@ def kakao_callback(request):
         access_jwt = jwt_publish(kakao_id)
     print("access_jwt: ", access_jwt)
     response_token = JsonResponse(response_json)
-    response_token.set_cookie('access_jwt', access_jwt)
+    response_token.set_cookie('access_jwt', access_jwt, max_age=None)
     
     return response_token
 
@@ -151,6 +155,10 @@ def kakao_logout(request):
     
     # del session
     del request.session['access_token']
+    
+    token_reset = ''
+    response_token = JsonResponse({'success':True})
+    response_token.set_cookie('access_jwt', token_reset)
     
     return redirect(dest_url)
 
