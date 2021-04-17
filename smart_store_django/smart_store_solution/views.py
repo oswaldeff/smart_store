@@ -32,10 +32,9 @@ def jwt_authorization(func):
             login_user = User.objects.get(kakao_id=payload['kakao_id'])
             print(login_user)
             request.user = login_user
+            return func(self, request, *args, **kwargs)
         except jwt.exceptions.DecodeError:
             return JsonResponse({'message':'INVALID_TOKEN'},status=400)
-        print('pass')
-        return func(self, request, *args, **kwargs)
     return wrapper
 
 # multiple lookup fields
@@ -62,7 +61,7 @@ class UserRestfulMain(ListAPIView):
     serializer_class = UserSerializer
 
 class UserRestfulDetail(RetrieveAPIView):
-    permission_classes = [AllowAny]
+    # permission_classes = [AllowAny]
     lookup_field = 'User_pk'
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer

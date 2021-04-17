@@ -1,11 +1,12 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 
-class User(models.Model):
+class User(AbstractUser):
     User_pk = models.AutoField(primary_key=True)
     kakao_id = models.IntegerField()
-    nickname = models.CharField(max_length=40, null=True)
+    nickname = models.CharField(max_length=40, null=True, blank=True)
     
     def __str__(self):
         return str(self.kakao_id)
