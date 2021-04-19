@@ -7,6 +7,10 @@ class User_admin(admin.ModelAdmin):
         'User_pk',
         'nickname',
         'kakao_id',
+        'is_staff',
+        'is_admin',
+        'is_active',
+        'is_superuser',
         ]
 
 class Merchandise_admin(admin.ModelAdmin):
