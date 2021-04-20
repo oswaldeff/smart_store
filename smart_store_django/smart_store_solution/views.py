@@ -61,8 +61,9 @@ class UserRestfulDetail(RetrieveAPIView):
     lookup_field = 'User_pk'
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
-    # permission_classes = [IsAuthenticated]
-    # authentication_classes = [SessionAuthentication]
+    #permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
+    #authentication_classes = [SessionAuthentication]
     @jwt_authorization
     def get(self, request, *args, **kwargs):
         serializer = self.serializer_class(request.user)
