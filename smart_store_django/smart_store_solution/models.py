@@ -8,8 +8,8 @@ class UserManager(BaseUserManager):
         주어진 이메일, 닉네임, 비밀번호 등 개인정보로 User 인스턴스 생성
         """
         user = self.model(kakao_id=kakao_id, nickname=nickname)
-        #user.set_unusable_password()
-        user.set_password(password)
+        user.set_unusable_password()
+        #user.set_password(password)
         user.save()
         return user
     
@@ -32,7 +32,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     
     User_pk = models.AutoField(primary_key=True)

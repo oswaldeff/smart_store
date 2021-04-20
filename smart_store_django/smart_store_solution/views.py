@@ -8,27 +8,24 @@ from .models import User, Merchandise
 import jwt
 #from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.response import Response
+from rest_framework import status
 
 # Create your views here.
 
 # jwt
 def jwt_publish(kakao_id):
     access_jwt = jwt.encode({'kakao_id': kakao_id}, my_settings.JWT_AUTH['JWT_SECRET_KEY'], algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
-    print("1. access_jwt: ", access_jwt)
     access_jwt = access_jwt.decode('utf-8')
-    print("2. access_jwt: ", access_jwt)
     return access_jwt
 
 def jwt_authorization(func):
     def wrapper(self, request, *args, **kwargs):
         try:
             access_jwt = request.COOKIES.get('access_jwt')
-            print('access_jwt: ', access_jwt)
-            print('access_jwt decoding................................')
-            #access_jwt = access_jwt.decode('utf-8')
             payload = jwt.decode(access_jwt, my_settings.JWT_AUTH['JWT_SECRET_KEY'], algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
-            print("here!!!!!!!!!")
-            print(payload)
             login_user = User.objects.get(kakao_id=payload['kakao_id'])
             print(login_user)
             request.user = login_user
@@ -61,14 +58,17 @@ class UserRestfulMain(ListAPIView):
     serializer_class = UserSerializer
 
 class UserRestfulDetail(RetrieveAPIView):
-    # permission_classes = [AllowAny]
     lookup_field = 'User_pk'
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication]
     @jwt_authorization
     def get(self, request, *args, **kwargs):
-        print('2')
-        return self.retrieve(request, *args, **kwargs)
+        serializer = self.serializer_class(request.user)
+        print(serializer)
+        print('get in....')
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 # Merchandise classes
 ## Create
@@ -137,8 +137,9 @@ def kakao_callback(request):
     
     ## login
     if len(User_search) != 0:
+        User_search.update(is_active=True)
         access_jwt = jwt_publish(kakao_id)
-    print("access_jwt: ", access_jwt)
+    
     response_token = JsonResponse(response_json)
     response_token.set_cookie('access_jwt', access_jwt, max_age=None)
     
@@ -151,6 +152,16 @@ def kakao_logout(request):
     access_token = request.session['access_token']
     dest_url = f'https://kauth.kakao.com/oauth/logout?client_id={api_key}&logout_redirect_uri={redirect_uri}'
     response = requests.get(dest_url)
+    
+    profile_url = 'https://kapi.kakao.com/v2/user/me'
+    headers = {'Authorization' : f'Bearer {access_token}'}
+    profile_request = requests.get(profile_url, headers=headers)
+    profile_json = profile_request.json()
+    kakao_id = profile_json['id']
+    
+    # logout User
+    User_search = User.objects.filter(kakao_id=kakao_id)
+    User_search.update(is_active=False)
     
     # del session
     del request.session['access_token']
@@ -169,14 +180,13 @@ def User_delete(request):
     headers = {'Authorization' : f'Bearer {access_token}'}
     profile_request = requests.get(profile_url, headers=headers)
     profile_json = profile_request.json()
+    kakao_id = profile_json['id']
     
     dest_url = 'https://kapi.kakao.com/v1/user/unlink'
     response = requests.get(dest_url, headers=headers)
     
     # del User
-    User_search = User.objects.filter(
-        kakao_id = profile_json['id']
-        )
+    User_search = User.objects.filter(kakao_id=kakao_id)
     User_search.delete()
     
     # del session
