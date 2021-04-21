@@ -6,6 +6,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView,
 from .serializers import UserSerializer, UserDetailSerializer, MerchandiseSerializer, MerchandiseDetailSerializer, MerchandiseCreateSerializer
 from .models import User, Merchandise
 import jwt
+import datetime
 #from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
@@ -16,22 +17,30 @@ from rest_framework import status
 # Create your views here.
 
 # jwt
-def jwt_publish(kakao_id):
-    access_jwt = jwt.encode({'kakao_id': kakao_id}, my_settings.JWT_AUTH['JWT_SECRET_KEY'], algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
+def jwt_publish(kakao_id, access_token):
+    access_jwt = jwt.encode({'exp': my_settings.JWT_AUTH['JWT_EXPIRATION_DELTA'], 'kakao_id': kakao_id}, my_settings.JWT_AUTH['JWT_SECRET_KEY']+access_token, algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
     access_jwt = access_jwt.decode('utf-8')
+    print("jwt_publish -> access_jwt: ", access_jwt)
     return access_jwt
 
 def jwt_authorization(func):
     def wrapper(self, request, *args, **kwargs):
+        print('jwt_authorization ...ing')
         try:
+            access_token = request.session['access_token']
+            print('access_token: ', access_token)
             access_jwt = request.COOKIES.get('access_jwt')
-            payload = jwt.decode(access_jwt, my_settings.JWT_AUTH['JWT_SECRET_KEY'], algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
+            print('access_jwt: ', access_jwt)
+            payload = jwt.decode(access_jwt, my_settings.JWT_AUTH['JWT_SECRET_KEY']+access_token, algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
+            print('payload: ', payload)
             login_user = User.objects.get(kakao_id=payload['kakao_id'])
             print(login_user)
             request.user = login_user
             return func(self, request, *args, **kwargs)
-        except jwt.exceptions.DecodeError:
-            return JsonResponse({'message':'INVALID_TOKEN'},status=400)
+        except jwt.ExpiredSignatureError:
+            return JsonResponse({'message':'TOKEN_EXPIRED'}, status=401)
+        except jwt.InvalidTokenError:
+            return JsonResponse({'message':'INVALID_TOKEN'}, status=401)
     return wrapper
 
 # multiple lookup fields
@@ -134,12 +143,12 @@ def kakao_callback(request):
     ## create
     if len(User_search) == 0:
         User.objects.create(kakao_id=kakao_id, nickname=nickname)
-        access_jwt = jwt_publish(kakao_id)
+        access_jwt = jwt_publish(kakao_id, access_token)
     
     ## login
     if len(User_search) != 0:
         User_search.update(is_active=True)
-        access_jwt = jwt_publish(kakao_id)
+        access_jwt = jwt_publish(kakao_id, access_token)
     
     response_token = JsonResponse(response_json)
     response_token.set_cookie('access_jwt', access_jwt, max_age=None)
