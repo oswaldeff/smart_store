@@ -16,8 +16,8 @@ class User_admin(admin.ModelAdmin):
 class Merchandise_admin(admin.ModelAdmin):
     list_display = [
         'id',
-        'item_name',
         'User_pk',
+        'item_name',
         ]
 
 admin.site.register(User, User_admin)

@@ -6,17 +6,17 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView,
 from .serializers import UserSerializer, UserDetailSerializer, MerchandiseSerializer, MerchandiseDetailSerializer, MerchandiseCreateSerializer
 from .models import User, Merchandise
 import jwt
-import datetime
+#import datetime
 #from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import AllowAny
+#from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+#from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 from rest_framework import status
 
 # Create your views here.
 
-# jwt
+# json web token
 def jwt_publish(kakao_id, access_token):
     access_jwt = jwt.encode({'exp': my_settings.JWT_AUTH['JWT_EXPIRATION_DELTA'], 'kakao_id': kakao_id}, my_settings.JWT_AUTH['JWT_SECRET_KEY']+access_token, algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
     access_jwt = access_jwt.decode('utf-8')
@@ -27,14 +27,18 @@ def jwt_authorization(func):
     def wrapper(self, request, *args, **kwargs):
         print('jwt_authorization ...ing')
         try:
-            access_token = request.session['access_token']
-            print('access_token: ', access_token)
+            if request.session.get('access_token'):
+                access_token = request.session['access_token']
+                print("access_token: ", access_token)
+            else:
+                return JsonResponse({'message':'RELOGIN_NEED'}, status=401)
+            
             access_jwt = request.COOKIES.get('access_jwt')
             print('access_jwt: ', access_jwt)
             payload = jwt.decode(access_jwt, my_settings.JWT_AUTH['JWT_SECRET_KEY']+access_token, algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
             print('payload: ', payload)
             login_user = User.objects.get(kakao_id=payload['kakao_id'])
-            print(login_user)
+            print('login_user: ', login_user)
             request.user = login_user
             return func(self, request, *args, **kwargs)
         except jwt.ExpiredSignatureError:
@@ -49,15 +53,21 @@ class MultipleFieldLookupMixin:
     Apply this mixin to any view or viewset to get multiple field filtering
     based on a `lookup_fields` attribute, instead of the default single field filtering.
     """
+    
     def get_object(self):
         queryset = self.get_queryset()             # Get the base queryset
+        print('1. queryset: ', queryset)
         queryset = self.filter_queryset(queryset)  # Apply any filter backends
+        print('2. queryset: ', queryset)
         filter = {}
         for field in self.lookup_fields:
             if self.kwargs[field]: # Ignore empty fields.
                 filter[field] = self.kwargs[field]
+        print('filter: ', filter)
         obj = get_object_or_404(queryset, **filter)  # Lookup the object
+        print('obj : ', obj)
         self.check_object_permissions(self.request, obj)
+        
         return obj
 
 # User classes
@@ -67,17 +77,15 @@ class UserRestfulMain(ListAPIView):
     serializer_class = UserSerializer
 
 class UserRestfulDetail(RetrieveAPIView):
+    permission_classes = [AllowAny]
     lookup_field = 'User_pk'
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
-    #permission_classes = [IsAuthenticated]
-    permission_classes = [AllowAny]
-    #authentication_classes = [SessionAuthentication]
+    
     @jwt_authorization
     def get(self, request, *args, **kwargs):
         serializer = self.serializer_class(request.user)
-        print(serializer)
-        print('get in....')
+        print('공부할부분:', serializer)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 # Merchandise classes
@@ -88,13 +96,38 @@ class MerchandiseRestfulCreate(CreateAPIView):
 
 ## Read
 class MerchandiseRestfulMain(ListAPIView):
+    permission_classes = [AllowAny]
+    lookup_field = 'User_pk'
     queryset = Merchandise.objects.all()
     serializer_class = MerchandiseSerializer
+    
+    @jwt_authorization
+    def get(self, request, *args, **kwargs):
+        datas = []
+        for m in Merchandise.objects.filter(User_pk=request.user):
+            serializer = self.serializer_class(m)
+            datas.append(serializer.data)
+        
+        return Response(datas, status=status.HTTP_200_OK)
 
 class MerchandiseRestfulDetail(MultipleFieldLookupMixin, RetrieveAPIView):
+    permission_classes = [AllowAny]
     lookup_fields = ['User_pk', 'id']
     queryset = Merchandise.objects.all()
     serializer_class = MerchandiseDetailSerializer
+    
+    @jwt_authorization
+    def get(self, request, *args, **kwargs):
+        print('Im inn!!!')
+        # print('What I want: ', MultipleFieldLookupMixin.get_object(self))
+        # print(Merchandise.objects.filter(User_pk=request.user))
+        # print(Merchandise.objects.filter(id=3)[0])
+        try: 
+            if MultipleFieldLookupMixin.get_object(self) in Merchandise.objects.filter(User_pk=request.user):
+                serializer = self.serializer_class(MultipleFieldLookupMixin.get_object(self))
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except:
+            return JsonResponse({'message':'unauth'}, status=401)
 
 ## Update
 class MerchandiseRestfulUpdate(UpdateAPIView):
@@ -176,9 +209,10 @@ def kakao_logout(request):
     # del session
     del request.session['access_token']
     
-    token_reset = ''
-    response_token = JsonResponse({'success':True})
-    response_token.set_cookie('access_jwt', token_reset)
+    # del cookie('access_jwt')
+    # token_reset = ''
+    # response_token = JsonResponse({'success':True})
+    # response_token.set_cookie('access_jwt', token_reset)
     
     return redirect(dest_url)
 

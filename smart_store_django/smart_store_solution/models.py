@@ -5,7 +5,7 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, Permis
 class UserManager(BaseUserManager):
     def create_user(self, kakao_id, nickname, password=None, **extra_fields):
         """
-        주어진 이메일, 닉네임, 비밀번호 등 개인정보로 User 인스턴스 생성
+        주어진 카카오아이디값, 닉네임으로 개인정보로 User 인스턴스 생성
         """
         user = self.model(kakao_id=kakao_id, nickname=nickname)
         user.set_unusable_password()
@@ -15,7 +15,7 @@ class UserManager(BaseUserManager):
     
     def create_superuser(self, kakao_id, nickname, password=None, **extra_fields):
         """
-        주어진 이메일, 닉네임, 비밀번호 등 개인정보로 User 인스턴스 생성
+        주어진 카카오아이디값, 비밀번호 등 개인정보로 User 인스턴스 생성
         단, 최상위 사용자이므로 권한을 부여한다. 
         """
         superuser = self.create_user(kakao_id=kakao_id, nickname=nickname, password=password)
@@ -46,7 +46,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
     
     def __str__(self):
-        return str(self.kakao_id)
+        return str(self.User_pk)
     
     class Meta:
         db_table = 'Users'
