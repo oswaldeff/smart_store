@@ -11,14 +11,14 @@ class UserSerializer(serializers.ModelSerializer):
             'nickname'
             )
 
-class UserDetailSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = (
-            'User_pk',
-            'kakao_id',
-            'nickname'
-            )
+# class UserDetailSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = (
+#             'User_pk',
+#             'kakao_id',
+#             'nickname'
+#             )
 
 # Merchandise classes
 class MerchandiseSerializer(serializers.ModelSerializer):

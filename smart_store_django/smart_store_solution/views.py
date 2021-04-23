@@ -3,7 +3,7 @@ from smart_store_project import my_settings
 import requests
 from django.http import JsonResponse
 from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView, CreateAPIView
-from .serializers import UserSerializer, UserDetailSerializer, MerchandiseSerializer, MerchandiseDetailSerializer, MerchandiseCreateSerializer
+from .serializers import UserSerializer, MerchandiseSerializer, MerchandiseDetailSerializer, MerchandiseCreateSerializer
 from .models import User, Merchandise
 import jwt
 #import datetime
@@ -31,7 +31,7 @@ def jwt_authorization(func):
                 access_token = request.session['access_token']
                 print("access_token: ", access_token)
             else:
-                return JsonResponse({'message':'RELOGIN_NEED'}, status=401)
+                return JsonResponse({'message': 'UNAUTHORIZED ACCESS'}, status=401)
             
             access_jwt = request.COOKIES.get('access_jwt')
             print('access_jwt: ', access_jwt)
@@ -40,11 +40,12 @@ def jwt_authorization(func):
             login_user = User.objects.get(kakao_id=payload['kakao_id'])
             print('login_user: ', login_user)
             request.user = login_user
+            print('request.user: ', request.user)
             return func(self, request, *args, **kwargs)
         except jwt.ExpiredSignatureError:
-            return JsonResponse({'message':'TOKEN_EXPIRED'}, status=401)
+            return JsonResponse({'message': 'TOKEN EXPIRED'}, status=401)
         except jwt.InvalidTokenError:
-            return JsonResponse({'message':'INVALID_TOKEN'}, status=401)
+            return JsonResponse({'message': 'INVALID TOKEN'}, status=401)
     return wrapper
 
 # multiple lookup fields
@@ -61,6 +62,7 @@ class MultipleFieldLookupMixin:
         print('2. queryset: ', queryset)
         filter = {}
         for field in self.lookup_fields:
+            print('field: ', field)
             if self.kwargs[field]: # Ignore empty fields.
                 filter[field] = self.kwargs[field]
         print('filter: ', filter)
@@ -73,14 +75,9 @@ class MultipleFieldLookupMixin:
 # User classes
 ## Read
 class UserRestfulMain(ListAPIView):
+    permission_classes = [AllowAny]
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
-class UserRestfulDetail(RetrieveAPIView):
-    permission_classes = [AllowAny]
-    lookup_field = 'User_pk'
-    queryset = User.objects.all()
-    serializer_class = UserDetailSerializer
     
     @jwt_authorization
     def get(self, request, *args, **kwargs):
@@ -88,11 +85,28 @@ class UserRestfulDetail(RetrieveAPIView):
         print('공부할부분:', serializer)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+# class UserRestfulDetail(RetrieveAPIView):
+#     permission_classes = [AllowAny]
+#     lookup_field = 'User_pk'
+#     queryset = User.objects.all()
+#     serializer_class = UserDetailSerializer
+    
+#     @jwt_authorization
+#     def get(self, request, *args, **kwargs):
+#         serializer = self.serializer_class(request.user)
+#         print('공부할부분:', serializer)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
 # Merchandise classes
 ## Create
 class MerchandiseRestfulCreate(CreateAPIView):
+    permission_classes = [AllowAny]
     queryset = Merchandise.objects.all()
     serializer_class = MerchandiseCreateSerializer
+    
+    @jwt_authorization
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
 
 ## Read
 class MerchandiseRestfulMain(ListAPIView):
@@ -106,6 +120,7 @@ class MerchandiseRestfulMain(ListAPIView):
         datas = []
         for m in Merchandise.objects.filter(User_pk=request.user):
             serializer = self.serializer_class(m)
+            print(m)
             datas.append(serializer.data)
         
         return Response(datas, status=status.HTTP_200_OK)
@@ -119,15 +134,15 @@ class MerchandiseRestfulDetail(MultipleFieldLookupMixin, RetrieveAPIView):
     @jwt_authorization
     def get(self, request, *args, **kwargs):
         print('Im inn!!!')
-        # print('What I want: ', MultipleFieldLookupMixin.get_object(self))
-        # print(Merchandise.objects.filter(User_pk=request.user))
-        # print(Merchandise.objects.filter(id=3)[0])
+        print('first: ', MultipleFieldLookupMixin.get_object(self))
+        print('second: ', Merchandise.objects.filter(User_pk=request.user))
         try: 
             if MultipleFieldLookupMixin.get_object(self) in Merchandise.objects.filter(User_pk=request.user):
                 serializer = self.serializer_class(MultipleFieldLookupMixin.get_object(self))
+                print('serializer: ', serializer)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except:
-            return JsonResponse({'message':'unauth'}, status=401)
+            return JsonResponse({'message': 'UNAUTHORIZED ACCESS'}, status=401)
 
 ## Update
 class MerchandiseRestfulUpdate(UpdateAPIView):

@@ -32,7 +32,7 @@ urlpatterns = [
     
     # rest API
     path('users/', views.UserRestfulMain.as_view(), name='Users_list'),
-    path('users/detail/<User_pk>/', views.UserRestfulDetail.as_view(), name='Users_detail'),
+    # path('users/detail/<User_pk>/', views.UserRestfulDetail.as_view(), name='Users_detail'),
     
     path('merchandises/', views.MerchandiseRestfulMain.as_view(), name='Merchandises_list'),
     path('merchandises/create/', views.MerchandiseRestfulCreate.as_view(), name='Merchandises_create'),

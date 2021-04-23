@@ -54,7 +54,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Merchandise(models.Model):
     id = models.AutoField(primary_key=True)
     User_pk = models.ForeignKey(User, on_delete=models.CASCADE, db_column='User_pk')
-    item_name = models.CharField(max_length=255, null=True)
+    item_name = models.CharField(max_length=255, unique=True, null=True)
     country_from = models.CharField(max_length=255, null=True)
     item_currency = models.CharField(max_length=255, null=True)
     shipping_currency = models.CharField(max_length=255, null=True)
