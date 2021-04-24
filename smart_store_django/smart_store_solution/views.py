@@ -13,7 +13,7 @@ from rest_framework.permissions import AllowAny
 #from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 from rest_framework import status
-
+from django.contrib.auth import logout
 # Create your views here.
 
 # json web token
@@ -82,6 +82,7 @@ class UserRestfulMain(ListAPIView):
     @jwt_authorization
     def get(self, request, *args, **kwargs):
         serializer = self.serializer_class(request.user)
+        logout(request)
         print('공부할부분:', serializer)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
