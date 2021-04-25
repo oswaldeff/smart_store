@@ -200,7 +200,7 @@ def kakao_callback(request):
         access_jwt = jwt_publish(kakao_id, access_token)
     
     response_token = JsonResponse(response_json)
-    response_token.set_cookie('access_jwt', access_jwt, max_age=None)
+    response_token.set_cookie('access_jwt', access_jwt, max_age=None, expires=None, path='/', domain=None, secure=False, httponly=False, samesite=None)
     
     return response_token
 
