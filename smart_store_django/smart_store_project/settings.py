@@ -189,3 +189,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'smart_store_solution.User'
+
+SESSION_COOKIE_HTTPONLY = True
