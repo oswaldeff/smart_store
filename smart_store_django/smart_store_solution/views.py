@@ -41,6 +41,7 @@ def jwt_authorization(func):
             print('login_user: ', login_user)
             request.user = login_user
             print('request.user: ', request.user)
+            print('이 func이 뭘반환해줌? :', func(self, request, *args, **kwargs))
             return func(self, request, *args, **kwargs)
         except jwt.ExpiredSignatureError:
             return JsonResponse({'message': 'TOKEN EXPIRED'}, status=401)
@@ -82,9 +83,9 @@ class UserRestfulMain(ListAPIView):
     @jwt_authorization
     def get(self, request, *args, **kwargs):
         serializer = self.serializer_class(request.user)
-        logout(request)
+        #logout(request) -> 세션 로그아웃을 해버리면 이후에 사용자는 재로그인을 해야하기때문에 불가
         print('공부할부분:', serializer)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=201)
 
 # class UserRestfulDetail(RetrieveAPIView):
 #     permission_classes = [AllowAny]
@@ -96,7 +97,7 @@ class UserRestfulMain(ListAPIView):
 #     def get(self, request, *args, **kwargs):
 #         serializer = self.serializer_class(request.user)
 #         print('공부할부분:', serializer)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
+#         return Response(serializer.data, status=201)
 
 # Merchandise classes
 ## Create
@@ -124,7 +125,7 @@ class MerchandiseRestfulMain(ListAPIView):
             print(m)
             datas.append(serializer.data)
         
-        return Response(datas, status=status.HTTP_200_OK)
+        return Response(datas, status=201)
 
 class MerchandiseRestfulDetail(MultipleFieldLookupMixin, RetrieveAPIView):
     permission_classes = [AllowAny]
@@ -141,7 +142,8 @@ class MerchandiseRestfulDetail(MultipleFieldLookupMixin, RetrieveAPIView):
             if MultipleFieldLookupMixin.get_object(self) in Merchandise.objects.filter(User_pk=request.user):
                 serializer = self.serializer_class(MultipleFieldLookupMixin.get_object(self))
                 print('serializer: ', serializer)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+                # 여기도 좀 수정필요...
+            return Response(serializer.data, status=201)
         except:
             return JsonResponse({'message': 'UNAUTHORIZED ACCESS'}, status=401)
 
@@ -199,10 +201,12 @@ def kakao_callback(request):
         User_search.update(is_active=True)
         access_jwt = jwt_publish(kakao_id, access_token)
     
-    response_token = JsonResponse(response_json)
-    response_token.set_cookie('access_jwt', value=access_jwt, max_age=None, expires=None, path='/', domain=None, secure=False, httponly=False, samesite=None)
-    
-    return response_token
+    # response_token = JsonResponse(response_json)
+    response_status = JsonResponse({'message': 'LOGIN SUCCESS'}, status=201)
+    response_status.set_cookie('access_jwt', value=access_jwt, max_age=1000, expires=True, path='/', domain=None, secure=True, httponly=True, samesite='Lax')
+    print('리퀘 세션: ', request.session)
+    print(request.user)
+    return response_status
 
 ## logout
 def kakao_logout(request):
