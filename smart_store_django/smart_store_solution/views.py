@@ -108,6 +108,7 @@ class MerchandiseRestfulCreate(CreateAPIView):
     
     @jwt_authorization
     def post(self, request, *args, **kwargs):
+        
         return self.create(request, *args, **kwargs)
 
 ## Read
@@ -165,7 +166,7 @@ def kakao_login(request):
     api_key = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
     redirect_uri = 'http://127.0.0.1:8000/account/login/kakao/callback'
     dest_url = f'https://kauth.kakao.com/oauth/authorize?client_id={api_key}&redirect_uri={redirect_uri}&response_type=code'
-    
+    print('dest url: ', dest_url)
     return redirect(dest_url)
 
 def kakao_callback(request):
@@ -223,8 +224,8 @@ def kakao_logout(request):
     kakao_id = profile_json['id']
     
     # logout User
-    User_search = User.objects.filter(kakao_id=kakao_id)
-    User_search.update(is_active=False)
+    # User_search = User.objects.filter(kakao_id=kakao_id)
+    # User_search.update(is_active=False)
     
     # del session
     del request.session['access_token']
