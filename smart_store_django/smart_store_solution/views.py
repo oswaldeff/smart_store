@@ -41,7 +41,7 @@ def jwt_authorization(func):
             print('login_user: ', login_user)
             request.user = login_user
             print('request.user: ', request.user)
-            print('이 func이 뭘반환해줌? :', func(self, request, *args, **kwargs))
+            
             return func(self, request, *args, **kwargs)
         except jwt.ExpiredSignatureError:
             return JsonResponse({'message': 'TOKEN EXPIRED'}, status=401)
@@ -108,7 +108,12 @@ class MerchandiseRestfulCreate(CreateAPIView):
     
     @jwt_authorization
     def post(self, request, *args, **kwargs):
-        
+        print('req: ', request.data)
+        print('data: ', request.data['User_pk'])
+        print('type: ', type(request.data['User_pk']))
+        request.data._mutable = True
+        request.data['User_pk'] = str(request.user)
+        request.data._mutable = False
         return self.create(request, *args, **kwargs)
 
 ## Read
@@ -199,7 +204,7 @@ def kakao_callback(request):
     
     ## login
     if len(User_search) != 0:
-        User_search.update(is_active=True)
+        # User_search.update(is_active=True)
         access_jwt = jwt_publish(kakao_id, access_token)
     
     # response_token = JsonResponse(response_json)
