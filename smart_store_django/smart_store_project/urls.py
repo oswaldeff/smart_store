@@ -31,14 +31,14 @@ urlpatterns = [
     #path('account/', include('allauth.urls')),
     
     # rest API
-    path('users/', views.UserRestfulMain.as_view(), name='Users_list'),
+    path('user/', views.UserRestfulMain.as_view(), name='Users_list'),
     # path('users/detail/<User_pk>/', views.UserRestfulDetail.as_view(), name='Users_detail'),
     
-    path('merchandises/', views.MerchandiseRestfulMain.as_view(), name='Merchandises_list'),
-    path('merchandises/create/', views.MerchandiseRestfulCreate.as_view(), name='Merchandises_create'),
-    path('merchandises/detail/<User_pk>/<id>/', views.MerchandiseRestfulDetail.as_view(), name='Merchandises_detail'),
-    path('merchandises/detail/<User_pk>/<id>/update/', views.MerchandiseRestfulUpdate.as_view(), name='Merchandises_update'),
-    path('merchandises/detail/<User_pk>/<id>/delete/', views.MerchandiseRestfulDelete.as_view(), name='Merchandises_delete'),
+    path('merchandise/', views.MerchandiseRestfulMain.as_view(), name='Merchandises_list'),
+    path('merchandise/create/', views.MerchandiseRestfulCreate.as_view(), name='Merchandises_create'),
+    path('merchandise/detail/<User_pk>/<id>/', views.MerchandiseRestfulDetail.as_view(), name='Merchandises_detail'),
+    path('merchandise/detail/<User_pk>/<id>/update/', views.MerchandiseRestfulUpdate.as_view(), name='Merchandises_update'),
+    path('merchandise/detail/<User_pk>/<id>/delete/', views.MerchandiseRestfulDelete.as_view(), name='Merchandises_delete'),
     
     # kakao login
     path('account/login/kakao/', views.kakao_login, name='kakao_login'),
