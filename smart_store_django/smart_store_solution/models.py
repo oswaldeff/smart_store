@@ -9,7 +9,6 @@ class UserManager(BaseUserManager):
         """
         user = self.model(kakao_id=kakao_id, nickname=nickname)
         user.set_unusable_password()
-        #user.set_password(password)
         user.save()
         return user
     
@@ -27,22 +26,21 @@ class UserManager(BaseUserManager):
         return superuser
 
 class User(AbstractBaseUser, PermissionsMixin):
+    # basic form
     email = models.EmailField(max_length=255, null=True, blank=True)
     username = models.CharField(max_length=255, null=True, blank=True)
-    
+    # state
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
-    
+    # custom
     User_pk = models.AutoField(primary_key=True)
     kakao_id = models.IntegerField(unique=True)
     nickname = models.CharField(max_length=40, null=True, blank=True)
-    
-    
+    # setting
     USERNAME_FIELD = 'kakao_id'
     REQUIRED_FIELDS = ['nickname']
-    
     objects = UserManager()
     
     def __str__(self):

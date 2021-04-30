@@ -15,6 +15,7 @@ pymysql = "*"
 django-mysql = "*"
 pyjwt = "==1.7.1"
 djangorestframework-simplejwt = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 

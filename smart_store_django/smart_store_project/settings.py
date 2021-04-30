@@ -14,7 +14,6 @@ from pathlib import Path
 from .my_settings import KEY, SOCIALACCOUNTS, DB
 import os
 import pymysql
-#from smart_store_solution import models
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -41,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
     # my app
     'smart_store_solution',
     # django-webpack-loader
@@ -58,6 +56,8 @@ INSTALLED_APPS = [
     'rest_auth.registration',
     # provider
     'allauth.socialaccount.providers.kakao',
+    # cors
+    'corsheaders',
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -75,10 +75,6 @@ SITE_ID = 1
 
 SOCIALACCOUNT_PROVIDERS = SOCIALACCOUNTS
 
-# AUTH
-
-#AUTH_USER_MODEL = 'smart_store_solution.User'
-
 # REST_FRAMEWORK
 
 REST_FRAMEWORK = {
@@ -92,18 +88,6 @@ REST_FRAMEWORK = {
     ],
 }
 
-# REST jwt setting
-
-REST_USE_JWT = True
-
-# account setting
-
-# SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
-# ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
-# LOGIN_REDIRECT_URL = "/"
-# ACCOUNT_AUTHENTICATED_LOGOUT_REDIRECTS = True
-# ACCOUNT_LOGOUT_REDIRECT_URL = "/"
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -112,6 +96,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # cors
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'smart_store_project.urls'
@@ -188,9 +174,18 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# django auth user model
 AUTH_USER_MODEL = 'smart_store_solution.User'
 
+# session setting
 SESSION_COOKIE_SECURE = True
-
 SESSION_COOKIE_AGE = 18000
 SESSION_SAVE_EVERY_REQUEST = True
+
+# cors setting
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_WHITELIST = [
+    '.compute.amazonaws.com',
+    'http://127.0.0.1:8000',
+    'localhost:8000',
+]

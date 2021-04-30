@@ -6,11 +6,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView,
 from .serializers import UserSerializer, MerchandiseSerializer, MerchandiseDetailSerializer, MerchandiseCreateSerializer
 from .models import User, Merchandise
 import jwt
-#import datetime
-#from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
-#from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-#from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -91,18 +87,6 @@ class UserRestfulMain(ListAPIView):
         print('class UserRestfulMain(ListAPIView) -> serializer:', serializer)
         return Response(serializer.data, status=201)
 
-# class UserRestfulDetail(RetrieveAPIView):
-#     permission_classes = [AllowAny]
-#     lookup_field = 'User_pk'
-#     queryset = User.objects.all()
-#     serializer_class = UserDetailSerializer
-    
-#     @jwt_authorization
-#     def get(self, request, *args, **kwargs):
-#         serializer = self.serializer_class(request.user)
-#         print('공부할부분:', serializer)
-#         return Response(serializer.data, status=201)
-
 # Merchandise classes
 ## Create
 class MerchandiseRestfulCreate(CreateAPIView):
@@ -133,7 +117,6 @@ class MerchandiseRestfulMain(ListAPIView):
             serializer = self.serializer_class(m)
             print('class MerchandiseRestfulMain(ListAPIView) -> merchandises: ', m)
             datas.append(serializer.data)
-        
         return Response(datas, status=201)
 
 class MerchandiseRestfulDetail(MultipleFieldLookupMixin, RetrieveAPIView):
@@ -189,14 +172,15 @@ def kakao_login(request):
     api_key = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
     redirect_uri = 'http://127.0.0.1:8000/account/login/kakao/callback'
     dest_url = f'https://kauth.kakao.com/oauth/authorize?client_id={api_key}&redirect_uri={redirect_uri}&response_type=code'
-    print('dest url: ', dest_url)
     return redirect(dest_url)
 
 def kakao_callback(request):
     api_key = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
     redirect_uri = 'http://127.0.0.1:8000/account/login/kakao/callback'
     code = request.GET['code']
+    print('def kakao_callback(request) -> code: ', code)
     dest_url = f'https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={api_key}&redirect_uri={redirect_uri}&code={code}'
+    
     response = requests.get(dest_url)
     response_json= response.json()
     
@@ -232,7 +216,6 @@ def kakao_callback(request):
     response_status = JsonResponse({'message': 'LOGIN SUCCESS'}, status=201)
     response_status.set_cookie('access_jwt', value=access_jwt, max_age=1000, expires=True, path='/', domain=None, secure=True, httponly=True, samesite='Lax')
     request.session['login_user'] = str(User.objects.get(kakao_id=kakao_id))
-    
     return response_status
 
 ## logout
@@ -255,6 +238,7 @@ def kakao_logout(request):
     
     # del session
     del request.session['access_token']
+    del request.session['login_user']
     
     # del cookie('access_jwt')
     # token_reset = ''
