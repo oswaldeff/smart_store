@@ -214,7 +214,7 @@ def kakao_callback(request):
     
     # response_token = JsonResponse(response_json)
     response_status = JsonResponse({'message': 'LOGIN SUCCESS'}, status=201)
-    response_status.set_cookie('access_jwt', value=access_jwt, max_age=1000, expires=True, path='/', domain=None, secure=True, httponly=True, samesite='Lax')
+    response_status.set_cookie('access_jwt', value=access_jwt, max_age=1000, expires=True, path='/', domain=None, secure=None, httponly=True, samesite=None)
     request.session['login_user'] = str(User.objects.get(kakao_id=kakao_id))
     return response_status
 
