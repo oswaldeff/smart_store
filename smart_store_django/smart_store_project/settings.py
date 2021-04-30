@@ -11,13 +11,12 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
-from .my_settings import KEY, SOCIALACCOUNTS, DB
+from .my_settings import KEY, SOCIALACCOUNTS, DB, WHITELIST
 import os
 import pymysql
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -26,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['.compute.amazonaws.com', '127.0.0.1', 'localhost']
 
@@ -68,15 +67,12 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # one domain
-
 SITE_ID = 1
 
 # Socialaccount_providers
-
 SOCIALACCOUNT_PROVIDERS = SOCIALACCOUNTS
 
 # REST_FRAMEWORK
-
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
@@ -127,7 +123,6 @@ WSGI_APPLICATION = 'smart_store_project.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 # pymysql setting
-
 pymysql.version_info = (1, 4, 2, "final", 0)
 pymysql.install_as_MySQLdb()
 
@@ -173,6 +168,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # django auth user model
 AUTH_USER_MODEL = 'smart_store_solution.User'
@@ -184,8 +180,5 @@ SESSION_SAVE_EVERY_REQUEST = True
 
 # cors setting
 CORS_ORIGIN_ALLOW_ALL = False
-CORS_ORIGIN_WHITELIST = [
-    '.compute.amazonaws.com',
-    'http://127.0.0.1:8000',
-    'localhost:8000',
-]
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = WHITELIST
