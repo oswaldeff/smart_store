@@ -6,11 +6,11 @@ This is a python django api server project for naver smartstore users
 
 - Prerequisites
 
-python version 3.9, python-pipenv, python-django
+python version 3.9, python-pipenv
 
 - Installing
 
-pipenv install pymysql, pyjwt, pip install djangorestframework djangorestframework-jwt(x), requests, djangorestframework, django-rest-auth, django-allauth, cors
+pipenv install django pymysql pyjwt djangorestframework requests djangorestframework django-rest-auth django-allauth django-cors-headers
 
 - Deployment
 
