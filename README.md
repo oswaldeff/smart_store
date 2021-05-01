@@ -10,7 +10,7 @@ python version 3.9, python-pipenv, python-django
 
 - Installing
 
-pipenv install pymysql, pyjwt, requests, djangorestframework
+pipenv install pymysql, pyjwt, pip install djangorestframework djangorestframework-jwt(x), requests, djangorestframework, django-rest-auth, django-allauth, cors
 
 - Deployment
 
