@@ -10,7 +10,7 @@ python version 3.9, python-pipenv
 
 - Installing
 
-pipenv install django pymysql pyjwt djangorestframework requests djangorestframework django-rest-auth django-allauth django-cors-headers
+pipenv install django pymysql pyjwt djangorestframework requests django-rest-auth django-allauth django-cors-headers
 
 - Deployment
 
