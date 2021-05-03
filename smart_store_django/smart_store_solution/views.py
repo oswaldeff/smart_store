@@ -171,12 +171,16 @@ class MerchandiseRestfulDelete(MultipleFieldLookupMixin, DestroyAPIView):
 def kakao_login(request):
     api_key = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
     redirect_uri = 'http://ec2-3-35-137-239.ap-northeast-2.compute.amazonaws.com/account/login/kakao/callback'
+    # for TEST
+    #redirect_uri = 'http://127.0.0.1:8000/account/login/kakao/callback'
     dest_url = f'https://kauth.kakao.com/oauth/authorize?client_id={api_key}&redirect_uri={redirect_uri}&response_type=code'
     return redirect(dest_url)
 
 def kakao_callback(request):
     api_key = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
     redirect_uri = 'http://ec2-3-35-137-239.ap-northeast-2.compute.amazonaws.com/account/login/kakao/callback'
+    # for TEST
+    #redirect_uri = 'http://127.0.0.1:8000/account/login/kakao/callback'
     code = request.GET['code']
     #print('def kakao_callback(request) -> code: ', code)
     dest_url = f'https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={api_key}&redirect_uri={redirect_uri}&code={code}'
@@ -222,6 +226,8 @@ def kakao_callback(request):
 def kakao_logout(request):
     api_key = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
     redirect_uri = 'http://ec2-3-35-137-239.ap-northeast-2.compute.amazonaws.com'
+    # for TEST
+    #redirect_uri = 'http://127.0.0.1:8000'
     access_token = request.session['access_token']
     dest_url = f'https://kauth.kakao.com/oauth/logout?client_id={api_key}&logout_redirect_uri={redirect_uri}'
     response = requests.get(dest_url)

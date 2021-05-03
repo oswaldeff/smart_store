@@ -174,9 +174,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 AUTH_USER_MODEL = 'smart_store_solution.User'
 
 # session setting
-SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = False
 SESSION_COOKIE_AGE = 18000
-SESSION_SAVE_EVERY_REQUEST = True
+SESSION_SAVE_EVERY_REQUEST = False
 
 # cors setting
 CORS_ORIGIN_ALLOW_ALL = True # -> False
