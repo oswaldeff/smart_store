@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['.compute.amazonaws.com', '127.0.0.1', 'localhost']
 
@@ -174,11 +174,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 AUTH_USER_MODEL = 'smart_store_solution.User'
 
 # session setting
-SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_AGE = 18000
 SESSION_SAVE_EVERY_REQUEST = False
 
 # cors setting
-CORS_ORIGIN_ALLOW_ALL = True # -> False
+CORS_ORIGIN_ALLOW_ALL = True # -> False(for frontend)
 CORS_ALLOW_CREDENTIALS = True
 # CORS_ORIGIN_WHITELIST = WHITELIST
