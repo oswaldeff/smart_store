@@ -217,7 +217,7 @@ def kakao_callback(request):
         access_jwt = jwt_publish(kakao_id, access_token)
     
     # response_token = JsonResponse(response_json)
-    response_status = JsonResponse({'message': 'LOGIN SUCCESS'}, status=201)
+    response_status = JsonResponse({'message': 'LOGIN SUCCESS', 'profile': {'nickname': profile_json['properties']['nickname']}}, status=201)
     response_status.set_cookie('access_jwt', value=access_jwt, max_age=1000, expires=True, path='/', domain=None, secure=None, httponly=True, samesite=None)
     request.session['login_user'] = str(User.objects.get(kakao_id=kakao_id))
     return response_status
@@ -247,7 +247,7 @@ def kakao_logout(request):
     del request.session['access_token']
     del request.session['login_user']
     #print("logout -> del session pass point")
-
+    
     # del cookie('access_jwt')
     # token_reset = ''
     # response_token = JsonResponse({'success':True})
