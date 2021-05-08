@@ -91,7 +91,6 @@ class UserRestfulMain(ListAPIView):
 ## Create
 class MerchandiseRestfulCreate(CreateAPIView):
     permission_classes = [AllowAny]
-    http_method_names = ['get', 'head', 'post']
     queryset = Merchandise.objects.all()
     serializer_class = MerchandiseCreateSerializer
     
@@ -102,7 +101,7 @@ class MerchandiseRestfulCreate(CreateAPIView):
         request.data._mutable = True
         request.data['User_pk'] = str(request.user)
         request.data._mutable = False
-        return self.create(request, *args, **kwargs)
+        return self.create(request, *args, **kwargs).json
 
 ## Read
 class MerchandiseRestfulMain(ListAPIView):
@@ -140,7 +139,6 @@ class MerchandiseRestfulDetail(MultipleFieldLookupMixin, RetrieveAPIView):
 ## Update
 class MerchandiseRestfulUpdate(MultipleFieldLookupMixin, UpdateAPIView):
     permission_classes = [AllowAny]
-    http_method_names = ['get', 'head', 'put']
     lookup_fields = ['User_pk', 'id']
     queryset = Merchandise.objects.all()
     serializer_class = MerchandiseSerializer
@@ -157,7 +155,6 @@ class MerchandiseRestfulUpdate(MultipleFieldLookupMixin, UpdateAPIView):
 ## Delete
 class MerchandiseRestfulDelete(MultipleFieldLookupMixin, DestroyAPIView):
     permission_classes = [AllowAny]
-    http_method_names = ['get', 'head', 'delete']
     lookup_fields = ['User_pk', 'id']
     queryset = Merchandise.objects.all()
     serializer_class = MerchandiseSerializer
