@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from smart_store_project import my_settings
 import requests
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView, CreateAPIView
 from .serializers import UserSerializer, MerchandiseSerializer, MerchandiseDetailSerializer, MerchandiseCreateSerializer
 from .models import User, Merchandise
@@ -216,11 +216,13 @@ def kakao_callback(request):
         # User_search.update(is_active=True)
         access_jwt = jwt_publish(kakao_id, access_token)
     
-    # response_token = JsonResponse(response_json)
-    response_status = JsonResponse({'message': 'LOGIN SUCCESS'}, status=201)
-    response_status.set_cookie('access_jwt', value=access_jwt, max_age=1000, expires=True, path='/', domain=None, secure=None, httponly=True, samesite=None)
+    
+    #response_status = JsonResponse({'message': 'LOGIN SUCCESS'}, status=201)
+    #response_status.set_cookie('access_jwt', value=access_jwt, max_age=1000, expires=True, path='/', domain=None, secure=None, httponly=True, samesite=None)
     request.session['login_user'] = str(User.objects.get(kakao_id=kakao_id))
-    return response_status
+    resp_redirect = HttpResponseRedirect('http://localhost:3000')
+    resp_redirect.set_cookie('access_jwt', value=access_jwt, max_age=1000, expires=True, path='/', domain=None, secure=None, httponly=True, samesite=None)
+    return resp_redirect
 
 ## logout
 def kakao_logout(request):
