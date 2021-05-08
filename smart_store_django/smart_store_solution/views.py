@@ -101,7 +101,7 @@ class MerchandiseRestfulCreate(CreateAPIView):
         request.data._mutable = True
         request.data['User_pk'] = str(request.user)
         request.data._mutable = False
-        return self.create(request, *args, **kwargs).json
+        return self.create(request, *args, **kwargs)
 
 ## Read
 class MerchandiseRestfulMain(ListAPIView):
