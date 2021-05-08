@@ -9,6 +9,7 @@ import jwt
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.decorators import api_view
 
 # Create your views here.
 
@@ -95,6 +96,7 @@ class MerchandiseRestfulCreate(CreateAPIView):
     serializer_class = MerchandiseCreateSerializer
     
     @jwt_authorization
+    @api_view(['POST', 'GET'])
     def post(self, request, *args, **kwargs):
         #print('class MerchandiseRestfulCreate(CreateAPIView) -> request data: ', request.data)
         #print('class MerchandiseRestfulCreate(CreateAPIView) -> request data[User_pk]: ', request.data['User_pk'], type(request.data['User_pk']))
@@ -144,6 +146,7 @@ class MerchandiseRestfulUpdate(MultipleFieldLookupMixin, UpdateAPIView):
     serializer_class = MerchandiseSerializer
     
     @jwt_authorization
+    @api_view(['PUT', 'GET'])
     def put(self, request, *args, **kwargs):
         #print('class MerchandiseRestfulUpdate(MultipleFieldLookupMixin, UpdateAPIView) -> request data: ',request.data)
         request.data._mutable = True
@@ -160,6 +163,7 @@ class MerchandiseRestfulDelete(MultipleFieldLookupMixin, DestroyAPIView):
     serializer_class = MerchandiseSerializer
     
     @jwt_authorization
+    @api_view(['DELETE', 'GET'])
     def delete(self, request, *args, **kwargs):
         request.data._mutable = True
         request.data['User_pk'] = str(request.user)
