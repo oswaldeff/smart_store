@@ -98,9 +98,7 @@ class MerchandiseRestfulCreate(CreateAPIView):
     def post(self, request, *args, **kwargs):
         #print('class MerchandiseRestfulCreate(CreateAPIView) -> request data: ', request.data)
         #print('class MerchandiseRestfulCreate(CreateAPIView) -> request data[User_pk]: ', request.data['User_pk'], type(request.data['User_pk']))
-        request.data._mutable = True
-        request.data['User_pk'] = str(request.user)
-        request.data._mutable = False
+        request.data['User_pk'] = int(str(request.user))
         return self.create(request, *args, **kwargs)
 
 ## Read
@@ -146,9 +144,7 @@ class MerchandiseRestfulUpdate(MultipleFieldLookupMixin, UpdateAPIView):
     @jwt_authorization
     def put(self, request, *args, **kwargs):
         #print('class MerchandiseRestfulUpdate(MultipleFieldLookupMixin, UpdateAPIView) -> request data: ',request.data)
-        request.data._mutable = True
-        request.data['User_pk'] = str(request.user)
-        request.data._mutable = False
+        request.data['User_pk'] = int(str(request.user))
         return self.update(request, *args, **kwargs)
 
 
@@ -162,7 +158,7 @@ class MerchandiseRestfulDelete(MultipleFieldLookupMixin, DestroyAPIView):
     @jwt_authorization
     def delete(self, request, *args, **kwargs):
         request.data._mutable = True
-        request.data['User_pk'] = str(request.user)
+        request.data['User_pk'] = int(str(request.user))
         request.data._mutable = False
         return self.destroy(request, *args, **kwargs)
 
@@ -170,17 +166,17 @@ class MerchandiseRestfulDelete(MultipleFieldLookupMixin, DestroyAPIView):
 ## login
 def kakao_login(request):
     api_key = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
-    redirect_uri = 'http://ec2-3-35-137-239.ap-northeast-2.compute.amazonaws.com/account/login/kakao/callback'
+    #redirect_uri = 'http://ec2-3-35-137-239.ap-northeast-2.compute.amazonaws.com/account/login/kakao/callback'
     # for TEST
-    #redirect_uri = 'http://127.0.0.1:8000/account/login/kakao/callback'
+    redirect_uri = 'http://127.0.0.1:8000/account/login/kakao/callback'
     dest_url = f'https://kauth.kakao.com/oauth/authorize?client_id={api_key}&redirect_uri={redirect_uri}&response_type=code'
     return redirect(dest_url)
 
 def kakao_callback(request):
     api_key = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
-    redirect_uri = 'http://ec2-3-35-137-239.ap-northeast-2.compute.amazonaws.com/account/login/kakao/callback'
+    #redirect_uri = 'http://ec2-3-35-137-239.ap-northeast-2.compute.amazonaws.com/account/login/kakao/callback'
     # for TEST
-    #redirect_uri = 'http://127.0.0.1:8000/account/login/kakao/callback'
+    redirect_uri = 'http://127.0.0.1:8000/account/login/kakao/callback'
     code = request.GET['code']
     #print('def kakao_callback(request) -> code: ', code)
     dest_url = f'https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={api_key}&redirect_uri={redirect_uri}&code={code}'
@@ -216,20 +212,21 @@ def kakao_callback(request):
         # User_search.update(is_active=True)
         access_jwt = jwt_publish(kakao_id, access_token)
     
-    
-    #response_status = JsonResponse({'message': 'LOGIN SUCCESS'}, status=201)
-    #response_status.set_cookie('access_jwt', value=access_jwt, max_age=1000, expires=True, path='/', domain=None, secure=None, httponly=True, samesite=None)
+    #response
+    response_status = JsonResponse({'message': 'LOGIN SUCCESS'}, status=201)
+    response_status.set_cookie('access_jwt', value=access_jwt, max_age=1000, expires=True, path='/', domain=None, secure=None, httponly=True, samesite=None)
     request.session['login_user'] = str(User.objects.get(kakao_id=kakao_id))
-    resp_redirect = HttpResponseRedirect('http://localhost:3000')
-    resp_redirect.set_cookie('access_jwt', value=access_jwt, max_age=1000, expires=True, path='/', domain=None, secure=None, httponly=True, samesite=None)
-    return resp_redirect
+    return response_status
+    #resp_redirect = HttpResponseRedirect('http://localhost:3000')
+    #resp_redirect.set_cookie('access_jwt', value=access_jwt, max_age=1000, expires=True, path='/', domain=None, secure=None, httponly=True, samesite=None)
+    #return resp_redirect
 
 ## logout
 def kakao_logout(request):
     api_key = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
-    redirect_uri = 'http://ec2-3-35-137-239.ap-northeast-2.compute.amazonaws.com'
+    #redirect_uri = 'http://ec2-3-35-137-239.ap-northeast-2.compute.amazonaws.com'
     # for TEST
-    #redirect_uri = 'http://127.0.0.1:8000'
+    redirect_uri = 'http://127.0.0.1:8000'
     access_token = request.session['access_token']
     dest_url = f'https://kauth.kakao.com/oauth/logout?client_id={api_key}&logout_redirect_uri={redirect_uri}'
     response = requests.get(dest_url)

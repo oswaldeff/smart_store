@@ -64,7 +64,7 @@ class Merchandise(models.Model):
     last_price = models.IntegerField()
     purchase_price = models.IntegerField()
     etc_price = models.IntegerField()
-    smart_sotre_rate = models.IntegerField()
+    smart_store_rate = models.IntegerField()
     e_commerce_rate = models.IntegerField()
     credit_card_rate = models.IntegerField()
     settlement_amount = models.IntegerField()

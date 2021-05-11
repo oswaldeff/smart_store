@@ -30,7 +30,7 @@ class MerchandiseSerializer(serializers.ModelSerializer):
             'last_price',
             'purchase_price',
             'etc_price',
-            'smart_sotre_rate',
+            'smart_store_rate',
             'e_commerce_rate',
             'credit_card_rate',
             'settlement_amount'
@@ -54,7 +54,7 @@ class MerchandiseDetailSerializer(serializers.ModelSerializer):
             'last_price',
             'purchase_price',
             'etc_price',
-            'smart_sotre_rate',
+            'smart_store_rate',
             'e_commerce_rate',
             'credit_card_rate',
             'settlement_amount'
@@ -78,7 +78,7 @@ class MerchandiseCreateSerializer(serializers.ModelSerializer):
             'last_price',
             'purchase_price',
             'etc_price',
-            'smart_sotre_rate',
+            'smart_store_rate',
             'e_commerce_rate',
             'credit_card_rate',
             'settlement_amount'
