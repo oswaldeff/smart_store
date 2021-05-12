@@ -9,6 +9,7 @@ import jwt
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
@@ -80,12 +81,13 @@ class UserRestfulMain(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     
+    @csrf_exempt
     @jwt_authorization
     def get(self, request, *args, **kwargs):
         serializer = self.serializer_class(request.user)
         #logout(request) -> 세션 로그아웃을 해버리면 이후에 사용자는 재로그인을 해야하기때문에 불가
         #print('class UserRestfulMain(ListAPIView) -> serializer:', serializer)
-        return Response(serializer.data, status=201)
+        return Response(serializer.data, status=200)
 
 # Merchandise classes
 ## Create
@@ -94,12 +96,14 @@ class MerchandiseRestfulCreate(CreateAPIView):
     queryset = Merchandise.objects.all()
     serializer_class = MerchandiseCreateSerializer
     
+    @csrf_exempt
     @jwt_authorization
     def post(self, request, *args, **kwargs):
         #print('class MerchandiseRestfulCreate(CreateAPIView) -> request data: ', request.data)
         #print('class MerchandiseRestfulCreate(CreateAPIView) -> request data[User_pk]: ', request.data['User_pk'], type(request.data['User_pk']))
         request.data['User_pk'] = int(str(request.user))
-        return self.create(request, *args, **kwargs)
+        self.create(request, *args, **kwargs)
+        return JsonResponse({'message': 'MERCHANDISE CREATION SUCCESS'}, status=201)
 
 ## Read
 class MerchandiseRestfulMain(ListAPIView):
@@ -108,6 +112,7 @@ class MerchandiseRestfulMain(ListAPIView):
     queryset = Merchandise.objects.all()
     serializer_class = MerchandiseSerializer
     
+    @csrf_exempt
     @jwt_authorization
     def get(self, request, *args, **kwargs):
         datas = []
@@ -115,7 +120,7 @@ class MerchandiseRestfulMain(ListAPIView):
             serializer = self.serializer_class(m)
             #print('class MerchandiseRestfulMain(ListAPIView) -> merchandises: ', m)
             datas.append(serializer.data)
-        return Response(datas, status=201)
+        return Response(datas, status=200)
 
 class MerchandiseRestfulDetail(MultipleFieldLookupMixin, RetrieveAPIView):
     permission_classes = [AllowAny]
@@ -123,6 +128,7 @@ class MerchandiseRestfulDetail(MultipleFieldLookupMixin, RetrieveAPIView):
     queryset = Merchandise.objects.all()
     serializer_class = MerchandiseDetailSerializer
     
+    @csrf_exempt
     @jwt_authorization
     def get(self, request, *args, **kwargs):
         try: 
@@ -130,7 +136,7 @@ class MerchandiseRestfulDetail(MultipleFieldLookupMixin, RetrieveAPIView):
             #print('class MerchandiseRestfulDetail(MultipleFieldLookupMixin, RetrieveAPIView) -> Merchandise.objects.filter(User_pk=request.user): ', Merchandise.objects.filter(User_pk=request.user))
             if MultipleFieldLookupMixin.get_object(self) in Merchandise.objects.filter(User_pk=request.user):
                 serializer = self.serializer_class(MultipleFieldLookupMixin.get_object(self))
-            return Response(serializer.data, status=201)
+            return Response(serializer.data, status=200)
         except:
             return JsonResponse({'message': 'NOT FOUND'}, status=404)
 
@@ -141,11 +147,13 @@ class MerchandiseRestfulUpdate(MultipleFieldLookupMixin, UpdateAPIView):
     queryset = Merchandise.objects.all()
     serializer_class = MerchandiseSerializer
     
+    @csrf_exempt
     @jwt_authorization
     def put(self, request, *args, **kwargs):
         #print('class MerchandiseRestfulUpdate(MultipleFieldLookupMixin, UpdateAPIView) -> request data: ',request.data)
         request.data['User_pk'] = int(str(request.user))
-        return self.update(request, *args, **kwargs)
+        self.update(request, *args, **kwargs)
+        return JsonResponse({'message': 'MERCHANDISE UPDATE SUCCESS'}, status=201)
 
 
 ## Delete
@@ -155,28 +163,30 @@ class MerchandiseRestfulDelete(MultipleFieldLookupMixin, DestroyAPIView):
     queryset = Merchandise.objects.all()
     serializer_class = MerchandiseSerializer
     
+    @csrf_exempt
     @jwt_authorization
     def delete(self, request, *args, **kwargs):
         request.data._mutable = True
         request.data['User_pk'] = int(str(request.user))
         request.data._mutable = False
-        return self.destroy(request, *args, **kwargs)
+        self.destroy(request, *args, **kwargs)
+        return JsonResponse({'message': 'MERCHANDISE DELETION SUCCESS'}, status=201)
 
 # social login(kakao)
 ## login
-def kakao_login(request):
+def kakao_login_test(request):
     api_key = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
     #redirect_uri = 'http://ec2-3-35-137-239.ap-northeast-2.compute.amazonaws.com/account/login/kakao/callback'
     # for TEST
-    redirect_uri = 'http://127.0.0.1:8000/account/login/kakao/callback'
+    redirect_uri = 'http://127.0.0.1:8000/account/login/kakao/callback/test'
     dest_url = f'https://kauth.kakao.com/oauth/authorize?client_id={api_key}&redirect_uri={redirect_uri}&response_type=code'
     return redirect(dest_url)
 
-def kakao_callback(request):
+def kakao_callback_test(request):
     api_key = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
     #redirect_uri = 'http://ec2-3-35-137-239.ap-northeast-2.compute.amazonaws.com/account/login/kakao/callback'
     # for TEST
-    redirect_uri = 'http://127.0.0.1:8000/account/login/kakao/callback'
+    redirect_uri = 'http://127.0.0.1:8000/account/login/kakao/callback/test'
     code = request.GET['code']
     #print('def kakao_callback(request) -> code: ', code)
     dest_url = f'https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={api_key}&redirect_uri={redirect_uri}&code={code}'
@@ -184,13 +194,21 @@ def kakao_callback(request):
     response = requests.get(dest_url)
     response_json= response.json()
     
+    # access_token
+    access_token = response_json['access_token']
+    #print('response_json[access_token]: ', type(response_json['access_token']))
+    return JsonResponse({'access_token': access_token})
+
+@csrf_exempt
+def kakao_login(request, access_token):
     # create session
-    request.session['access_token'] = response_json['access_token']
+    request.session['access_token'] = access_token
+    
     #print('response_json[access_token]: ', type(response_json['access_token']))
     request.session.modified = True
-    access_token = request.session['access_token']
     profile_url = 'https://kapi.kakao.com/v2/user/me'
     headers = {'Authorization' : f'Bearer {access_token}'}
+    
     profile_request = requests.get(profile_url, headers=headers)
     profile_json = profile_request.json()
     
@@ -217,19 +235,17 @@ def kakao_callback(request):
     response_status.set_cookie('access_jwt', value=access_jwt, max_age=1000, expires=True, path='/', domain=None, secure=None, httponly=True, samesite=None)
     request.session['login_user'] = str(User.objects.get(kakao_id=kakao_id))
     return response_status
-    #resp_redirect = HttpResponseRedirect('http://localhost:3000')
-    #resp_redirect.set_cookie('access_jwt', value=access_jwt, max_age=1000, expires=True, path='/', domain=None, secure=None, httponly=True, samesite=None)
-    #return resp_redirect
 
 ## logout
+@csrf_exempt
 def kakao_logout(request):
-    api_key = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
+    #api_key = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
     #redirect_uri = 'http://ec2-3-35-137-239.ap-northeast-2.compute.amazonaws.com'
     # for TEST
-    redirect_uri = 'http://127.0.0.1:8000'
+    #redirect_uri = 'http://127.0.0.1:8000'
     access_token = request.session['access_token']
-    dest_url = f'https://kauth.kakao.com/oauth/logout?client_id={api_key}&logout_redirect_uri={redirect_uri}'
-    response = requests.get(dest_url)
+    #dest_url = f'https://kauth.kakao.com/oauth/logout?client_id={api_key}&logout_redirect_uri={redirect_uri}'
+    #response = requests.get(dest_url)
     
     profile_url = 'https://kapi.kakao.com/v2/user/me'
     headers = {'Authorization' : f'Bearer {access_token}'}
@@ -252,11 +268,10 @@ def kakao_logout(request):
     # response_token = JsonResponse({'success':True})
     # response_token.set_cookie('access_jwt', token_reset)
     
-    return redirect(dest_url)
+    return JsonResponse({'message': 'LOGOUT SUCCESS'}, status=201)
 
 ## leave service
 def User_delete(request):
-    api_key = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
     access_token = request.session['access_token']
     profile_url = 'https://kapi.kakao.com/v2/user/me'
     headers = {'Authorization' : f'Bearer {access_token}'}
@@ -264,8 +279,9 @@ def User_delete(request):
     profile_json = profile_request.json()
     kakao_id = profile_json['id']
     
-    dest_url = 'https://kapi.kakao.com/v1/user/unlink'
-    response = requests.get(dest_url, headers=headers)
+    # Unlink kakao
+    #dest_url = 'https://kapi.kakao.com/v1/user/unlink'
+    #response = requests.get(dest_url, headers=headers)
     
     # del User
     User_search = User.objects.filter(kakao_id=kakao_id)
@@ -275,4 +291,4 @@ def User_delete(request):
     del request.session['access_token']
     del request.session['login_user']
     
-    return redirect('https://accounts.kakao.com/login?continue=https%3A%2F%2Fkauth.kakao.com%2Foauth%2Fauthorize%3Fresponse_type%3Dcode%26client_id%3D568c2628fe5c198647460fc4e4243944%26redirect_uri%3Dhttp%253A%252F%252F127.0.0.1%253A8000%252Faccount%252Flogin%252Fkakao%252Fcallback')
+    return JsonResponse({'message': 'USER DELETION SUCCESS'}, status=201)
