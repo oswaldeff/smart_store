@@ -18,30 +18,21 @@ from django.urls import path, include
 from smart_store_solution import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin', admin.site.urls),
     
     # user
     path('users', views.UserRestfulMain.as_view(), name='User_list'),
-    path('users/', views.UserRestfulMain.as_view(), name='User_list'),
     # merchandise
     path('merchandises', views.MerchandiseRestfulMain.as_view(), name='Merchandise_list'),
-    path('merchandises/', views.MerchandiseRestfulMain.as_view(), name='Merchandise_list'),
     path('merchandises/create', views.MerchandiseRestfulCreate.as_view(), name='Merchandise_create'),
-    path('merchandises/create/', views.MerchandiseRestfulCreate.as_view(), name='Merchandise_create'),
     path('merchandises/detail/<User_pk>/<id>', views.MerchandiseRestfulDetail.as_view(), name='Merchandise_detail'),
-    path('merchandises/detail/<User_pk>/<id>/', views.MerchandiseRestfulDetail.as_view(), name='Merchandise_detail'),
     path('merchandises/detail/<User_pk>/<id>/update', views.MerchandiseRestfulUpdate.as_view(), name='Merchandise_update'),
-    path('merchandises/detail/<User_pk>/<id>/update/', views.MerchandiseRestfulUpdate.as_view(), name='Merchandise_update'),
     path('merchandises/detail/<User_pk>/<id>/delete', views.MerchandiseRestfulDelete.as_view(), name='Merchandise_delete'),
-    path('merchandises/detail/<User_pk>/<id>/delete/', views.MerchandiseRestfulDelete.as_view(), name='Merchandise_delete'),
     
     # kakao login & logout, user delete
-    #path('account/login/kakao/test/', views.kakao_login_test, name='kakao_login_test'),
-    #path('account/login/kakao/callback/test/', views.kakao_callback_test, name='kakao_callback_test'),
+    #path('accounts/login/kakao/test', views.kakao_login_test, name='kakao_login_test'),
+    #path('accounts/login/kakao/callback/test', views.kakao_callback_test, name='kakao_callback_test'),
     path('accounts/login/kakao/<access_token>', views.kakao_login, name='kakao_login'),
-    path('accounts/login/kakao/<access_token>/', views.kakao_login, name='kakao_login'),
     path('accounts/logout/kakao', views.kakao_logout, name='kakao_logout'),
-    path('accounts/logout/kakao/', views.kakao_logout, name='kakao_logout'),
     path('accounts/delete', views.User_delete, name='User_delete'),
-    path('accounts/delete/', views.User_delete, name='User_delete'),
 ]
