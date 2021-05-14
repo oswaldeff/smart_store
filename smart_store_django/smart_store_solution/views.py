@@ -24,9 +24,11 @@ def jwt_authorization(func):
     def wrapper(self, request, *args, **kwargs):
         #print('def)jwt_authorization -> inn')
         try:
-            if request.session.get('access_token'):
-                access_token = request.session['access_token']
-                #print("def)jwt_authorization -> access_token: ", access_token)
+            #if request.session.get('access_token'):
+            #    access_token = request.session['access_token']
+            #    #print("def)jwt_authorization -> access_token: ", access_token)
+            if request.COOKIES.get('access_token'):
+                access_token = request.COOKIES.get('access_token')
             else:
                 return JsonResponse({'message': 'UNAUTHORIZED ACCESS TOKEN'}, status=401)
             
@@ -200,7 +202,7 @@ def kakao_callback_test(request):
 @csrf_exempt
 def kakao_login(request, access_token):
     # create session
-    request.session['access_token'] = access_token
+    #request.session['access_token'] = access_token
     
     #print('response_json[access_token]: ', type(response_json['access_token']))
     request.session.modified = True
@@ -230,6 +232,7 @@ def kakao_login(request, access_token):
     
     #response
     response_status = JsonResponse({'message': 'LOGIN SUCCESS'}, status=201)
+    response_status.set_cookie('access_token', value=access_token, max_age=1000, expires=True, path='/', domain=None, secure=None, httponly=True, samesite=None)
     response_status.set_cookie('access_jwt', value=access_jwt, max_age=1000, expires=True, path='/', domain=None, secure=None, httponly=True, samesite=None)
     request.session['login_user'] = str(User.objects.get(kakao_id=kakao_id))
     return response_status
@@ -257,7 +260,7 @@ def kakao_logout(request):
     
     # del session
     #print("logout -> del session start point")
-    del request.session['access_token']
+    #del request.session['access_token']
     del request.session['login_user']
     #print("logout -> del session pass point")
     
@@ -286,7 +289,7 @@ def User_delete(request):
     User_search.delete()
     
     # del session
-    del request.session['access_token']
+    #del request.session['access_token']
     del request.session['login_user']
     
     return JsonResponse({'message': 'USER DELETION SUCCESS'}, status=201)
