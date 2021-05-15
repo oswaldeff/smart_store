@@ -293,3 +293,18 @@ def User_delete(request):
     del request.session['login_user']
     
     return JsonResponse({'message': 'USER DELETION SUCCESS'}, status=201)
+
+@csrf_exempt
+def cookie_set(request):
+    res = JsonResponse({'message': 'COOKIE SET SUCCESS'}, status=201)
+    test_cookie = 'ThisIsTestCookie'
+    res.set_cookie('test_cookie', value=test_cookie, max_age=1000, expires=True, path='/', domain=None, httponly=True, secure=None, samesite=None)
+    return res
+
+@csrf_exempt
+def cookie_get(request):
+    if request.COOKIES.get('test_cookie'):
+        test_cookie = request.COOKIES.get('test_cookie')
+        return JsonResponse({'message': 'COOKIE GET SUCCESS'}, status=201)
+    else:
+        return JsonResponse({'message': 'FAIL'}, status=401)
