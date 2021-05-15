@@ -232,8 +232,8 @@ def kakao_login(request, access_token):
     
     #response
     response_status = JsonResponse({'message': 'LOGIN SUCCESS'}, status=201)
-    response_status.set_cookie('access_token', value=access_token, max_age=1000, expires=True, path='/', domain=None, secure=None, samesite=None) #httponly=True
-    response_status.set_cookie('access_jwt', value=access_jwt, max_age=1000, expires=True, path='/', domain=None, secure=None, samesite=None)
+    response_status.set_cookie('access_token', value=access_token, max_age=1000, expires=True, path='/', domain=None, secure=None, samesite='Lax') #httponly=True
+    response_status.set_cookie('access_jwt', value=access_jwt, max_age=1000, expires=True, path='/', domain=None, secure=None, samesite='Lax')
     request.session['login_user'] = str(User.objects.get(kakao_id=kakao_id))
     return response_status
 
