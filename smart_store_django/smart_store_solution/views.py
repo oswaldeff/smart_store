@@ -244,7 +244,7 @@ def kakao_logout(request):
     #redirect_uri = 'http://ec2-3-35-137-239.ap-northeast-2.compute.amazonaws.com'
     # for TEST
     #redirect_uri = 'http://127.0.0.1:8000'
-    access_token = request.session['access_token']
+    access_token = request.COOKIES.get('access_token')
     #dest_url = f'https://kauth.kakao.com/oauth/logout?client_id={api_key}&logout_redirect_uri={redirect_uri}'
     #response = requests.get(dest_url)
     
