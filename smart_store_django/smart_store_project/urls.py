@@ -35,6 +35,6 @@ urlpatterns = [
     path('accounts/login/kakao/<access_token>', views.kakao_login, name='kakao_login'),
     path('accounts/logout/kakao', views.kakao_logout, name='kakao_logout'),
     path('accounts/delete', views.User_delete, name='User_delete'),
-    path('cookie/set', views.cookie_set, name='cookie_set'),
-    path('cookie/get', views.cookie_get, name='cookie_get'),
+    path('cookies/set', views.cookie_set, name='cookie_set'),
+    path('cookies/get', views.cookie_get, name='cookie_get'),
 ]
