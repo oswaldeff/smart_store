@@ -190,7 +190,7 @@ SESSION_SAVE_EVERY_REQUEST = False
 # cors setting
 CORS_ORIGIN_ALLOW_ALL = True # -> False(for frontend)
 CORS_ALLOW_CREDENTIALS = True
-# CORS_ORIGIN_WHITELIST = WHITELIST
+CORS_ORIGIN_WHITELIST = WHITELIST
 
 # url pattern setting either with slash or without slash
 APPEND_SLASH = False
