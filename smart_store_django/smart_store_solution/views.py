@@ -10,6 +10,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view
 
 # Create your views here.
 
@@ -295,6 +296,7 @@ def User_delete(request):
     return JsonResponse({'message': 'USER DELETION SUCCESS'}, status=201)
 
 @csrf_exempt
+#@api_view(['GET'])
 def cookie_set(request):
     res = JsonResponse({'message': 'COOKIE SET SUCCESS'}, status=201)
     test_cookie = 'ThisIsTestCookie'
@@ -303,6 +305,7 @@ def cookie_set(request):
     return res
 
 @csrf_exempt
+#@api_view(['GET'])
 def cookie_get(request):
     if request.COOKIES.get('test_cookie'):
         test_cookie = request.COOKIES.get('test_cookie')
