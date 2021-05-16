@@ -196,7 +196,7 @@ CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_AGE = 18000
 
 
-SESSION_COOKIE_DOMAIN = 'http://smartstore-test90.s3-website.ap-northeast-2.amazonaws.com'
+SESSION_COOKIE_DOMAIN = '.amazonaws.com'
 
 # url pattern setting either with slash or without slash
 APPEND_SLASH = False
