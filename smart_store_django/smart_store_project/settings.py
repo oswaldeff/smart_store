@@ -27,8 +27,7 @@ SECRET_KEY = KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-#ALLOWED_HOSTS = ['.compute.amazonaws.com', '.amazonaws.com', '127.0.0.1', '127.0.0.1:3000', '127.0.0.1:8000', 'localhost', 'localhost:3000', 'localhost:8000']
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['.compute.amazonaws.com', '.amazonaws.com', '127.0.0.1', 'localhost']
 
 # Application definition
 
@@ -197,7 +196,7 @@ CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_AGE = 18000
 
 
-SESSION_COOKIE_DOMAIN = '.amazonaws.com'
+SESSION_COOKIE_DOMAIN = 'http://smartstore-test90.s3-website.ap-northeast-2.amazonaws.com'
 
 # url pattern setting either with slash or without slash
 APPEND_SLASH = False
