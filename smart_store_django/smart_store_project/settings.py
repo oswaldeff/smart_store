@@ -183,7 +183,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 AUTH_USER_MODEL = 'smart_store_solution.User'
 
 # session setting
-SESSION_COOKIE_SECURE = False ##??? if SECURE=True -> kakao logut error occurs...
+#SESSION_COOKIE_SECURE = False ##??? if SECURE=True -> kakao logut error occurs...
 SESSION_COOKIE_AGE = 18000
 SESSION_SAVE_EVERY_REQUEST = False
 
@@ -193,6 +193,9 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = WHITELIST
 
 CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_AGE = 18000
+
 
 SESSION_COOKIE_DOMAIN = '.amazonaws.com'
 
