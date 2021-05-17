@@ -194,3 +194,8 @@ CORS_ORIGIN_WHITELIST = WHITELIST
 
 # url pattern setting either with slash or without slash
 APPEND_SLASH = False
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = 'None'
