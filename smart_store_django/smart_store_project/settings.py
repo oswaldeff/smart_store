@@ -201,6 +201,18 @@ CORS_ALLOW_METHODS = [
     'PUT',
 ]
 
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
 # url pattern setting either with slash or without slash
 APPEND_SLASH = False
 
