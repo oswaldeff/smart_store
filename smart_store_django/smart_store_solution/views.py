@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from smart_store_project import my_settings
 import requests
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponse
 from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView, CreateAPIView
 from .serializers import UserSerializer, MerchandiseSerializer, MerchandiseDetailSerializer, MerchandiseCreateSerializer
 from .models import User, Merchandise
@@ -296,17 +296,15 @@ def User_delete(request):
     return JsonResponse({'message': 'USER DELETION SUCCESS'}, status=201)
 
 @csrf_exempt
-#@api_view(['GET'])
 def cookie_set(request):
     res = JsonResponse({'message': 'COOKIE SET SUCCESS'}, status=200)
     test_cookie = 'ThisIsTestCookie'
     #res.set_cookie('test_cookie', value=test_cookie, max_age=1000, expires=True, path='/', domain=None, httponly=False, secure=False, samesite=None)
-    res.set_cookie('test_cookie', value=test_cookie, max_age=1000, expires=True, path='/', domain=None, secure=None, samesite='None')#httponly=True, 
+    res.set_cookie('test_cookie', value=test_cookie, max_age=1000, expires=True, path='/', domain=None, httponly=True, secure=True, samesite='None')#httponly=True, 
     print("set cookie complete!")
     return res
 
 @csrf_exempt
-#@api_view(['GET'])
 def cookie_get(request):
     if request.COOKIES.get('test_cookie'):
         test_cookie = request.COOKIES.get('test_cookie')
