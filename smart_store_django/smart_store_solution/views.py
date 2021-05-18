@@ -300,7 +300,7 @@ def User_delete(request):
 def cookie_set(request):
     res = JsonResponse({'message': 'COOKIE SET SUCCESS'}, status=201)
     test_cookie = 'ThisIsTestCookie'
-    res.set_cookie('test_cookie', value=test_cookie, max_age=1000, expires=True, path='/', httponly=None, secure=None, samesite=None)
+    res.set_cookie('test_cookie', value=test_cookie, max_age=1000, expires=True, path='/', domain='.amazonaws.com', httponly=False, secure=False, samesite=None)
     print("set cookie complete!")
     return res
 
