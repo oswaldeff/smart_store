@@ -298,9 +298,10 @@ def User_delete(request):
 @csrf_exempt
 #@api_view(['GET'])
 def cookie_set(request):
-    res = JsonResponse({'message': 'COOKIE SET SUCCESS'}, status=201)
+    res = JsonResponse({'message': 'COOKIE SET SUCCESS'}, status=200)
     test_cookie = 'ThisIsTestCookie'
-    res.set_cookie('test_cookie', value=test_cookie, max_age=1000, expires=True, path='/', domain=None, httponly=False, secure=False, samesite=None)
+    #res.set_cookie('test_cookie', value=test_cookie, max_age=1000, expires=True, path='/', domain=None, httponly=False, secure=False, samesite=None)
+    res.set_cookie('test_cookie', value=test_cookie)
     print("set cookie complete!")
     return res
 
@@ -310,7 +311,7 @@ def cookie_get(request):
     if request.COOKIES.get('test_cookie'):
         test_cookie = request.COOKIES.get('test_cookie')
         print("get cookie: ", test_cookie)
-        return JsonResponse({'message': 'COOKIE GET SUCCESS'}, status=201)
+        return JsonResponse({'message': 'COOKIE GET SUCCESS'}, status=200)
     else:
         print("Coudnt get cookie...")
         return JsonResponse({'message': 'FAIL'}, status=401)
