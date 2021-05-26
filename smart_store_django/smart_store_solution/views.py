@@ -311,12 +311,12 @@ def cookie_set(request):
 @csrf_exempt
 def cookie_get(request):
     if request.method == 'GET':
-        try:
+        if request.COOKIES.get('test_cookie'):
             test_cookie = request.COOKIES.get('test_cookie')
             res = JsonResponse({'message': 'COOKIE GET SUCCESS'}, status=200)
             print("get cookie: ", test_cookie)
             return res
-        except:
+        else:
             res = JsonResponse({'message': 'FAIL'}, status=401)
             print("Coudnt get cookie...")
             return res
