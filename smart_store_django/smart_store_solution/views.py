@@ -297,18 +297,30 @@ def User_delete(request):
 
 @csrf_exempt
 def cookie_set(request):
-    res = JsonResponse({'message': 'COOKIE SET SUCCESS'}, status=200)
-    test_cookie = 'ThisIsTestCookie'
-    res.set_cookie('test_cookie', value=test_cookie, max_age=1000, expires=True, path='/', domain='.amazonaws.com', secure=None, httponly=True, samesite='Lax')
-    print("set cookie complete!")
-    return res
+    if request.method == 'GET':
+        res = JsonResponse({'message': 'COOKIE SET SUCCESS'}, status=200)
+        test_cookie = 'ThisIsTestCookie'
+        res.set_cookie('test_cookie', value=test_cookie, max_age=1000, expires=True, path='/', domain='*.amazonaws.com', httponly=False, samesite='None')
+        print("set cookie complete!")
+        return res
+    else:
+        res = JsonResponse({'message': 'NOT AUTHORIZED METHOD'}, status=200)
+        print("not authorized!")
+        return res
 
 @csrf_exempt
 def cookie_get(request):
-    if request.COOKIES.get('test_cookie'):
-        test_cookie = request.COOKIES.get('test_cookie')
-        print("get cookie: ", test_cookie)
-        return JsonResponse({'message': 'COOKIE GET SUCCESS'}, status=200)
+    if request.method == 'GET':
+        try:
+            test_cookie = request.COOKIES.get('test_cookie')
+            res = JsonResponse({'message': 'COOKIE GET SUCCESS'}, status=200)
+            print("get cookie: ", test_cookie)
+            return res
+        except:
+            res = JsonResponse({'message': 'FAIL'}, status=401)
+            print("Coudnt get cookie...")
+            return res
     else:
-        print("Coudnt get cookie...")
-        return JsonResponse({'message': 'FAIL'}, status=401)
+        res = JsonResponse({'message': 'NOT AUTHORIZED METHOD'}, status=200)
+        print("not authorized!")
+        return res
