@@ -300,7 +300,7 @@ def cookie_set(request):
     if request.method == 'GET':
         res = JsonResponse({'message': 'COOKIE SET SUCCESS'}, status=200)
         test_cookie = 'ThisIsTestCookie'
-        res.set_cookie('test_cookie', value=test_cookie, max_age=1000, expires=True, path='/', domain=None, secure=False, httponly=False, samesite=None)
+        res.set_cookie('test_cookie', value=test_cookie, max_age=1000, expires=True, path='/', domain=None, secure='False', httponly='False', samesite='None')
         print("set cookie complete!")
         return res
     else:
