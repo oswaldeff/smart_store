@@ -304,7 +304,7 @@ def cookie_set(request):
         print("set cookie complete!")
         return res
     else:
-        res = JsonResponse({'message': 'NOT AUTHORIZED METHOD'}, status=200)
+        res = JsonResponse({'message': 'NOT AUTHORIZED METHOD'}, status=400)
         print("not authorized!")
         return res
 
@@ -321,6 +321,6 @@ def cookie_get(request):
             print("Coudnt get cookie...")
             return res
     else:
-        res = JsonResponse({'message': 'NOT AUTHORIZED METHOD'}, status=200)
+        res = JsonResponse({'message': 'NOT AUTHORIZED METHOD'}, status=400)
         print("not authorized!")
         return res
