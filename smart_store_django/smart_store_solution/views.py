@@ -295,7 +295,7 @@ def User_delete(request):
     
     return JsonResponse({'message': 'USER DELETION SUCCESS'}, status=201)
 
-#@csrf_exempt
+@csrf_exempt
 def cookie_set(request):
     if request.method == 'GET':
         res = JsonResponse({'message': 'COOKIE SET SUCCESS'}, status=200)
@@ -308,7 +308,7 @@ def cookie_set(request):
         print("not authorized!")
         return res
 
-#@csrf_exempt
+@csrf_exempt
 def cookie_get(request):
     if request.method == 'GET':
         if request.COOKIES.get('test_cookie'):
