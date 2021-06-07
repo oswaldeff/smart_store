@@ -300,7 +300,7 @@ def cookie_set(request):
     if request.method == 'GET':
         res = JsonResponse({'message': 'COOKIE SET SUCCESS'}, status=200)
         test_cookie = 'ThisIsTestCookie'
-        res.set_cookie('test_cookie', value=test_cookie, max_age=60*60*24*10, expires=True, path='/', domain=None, httponly='False', samesite='Lax')
+        res.set_cookie('test_cookie', value=test_cookie, max_age=60*60*24*1, expires=True, path='/', domain=None, httponly='False', samesite='Lax')
         print("set cookie complete!")
         return res
     else:
@@ -311,8 +311,8 @@ def cookie_set(request):
 @csrf_exempt
 def cookie_get(request):
     if request.method == 'GET':
-        if request.COOKIES['test_cookie']:
-            test_cookie = request.COOKIES['test_cookie']
+        if request.COOKIES.get('test_cookie'):
+            test_cookie = request.COOKIES.get('test_cookie')
             res = JsonResponse({'message': 'COOKIE GET SUCCESS'}, status=200)
             print("get cookie: ", test_cookie)
             return res
