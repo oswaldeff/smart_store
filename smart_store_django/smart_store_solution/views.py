@@ -313,7 +313,7 @@ def cookie_get(request):
     if request.method == 'GET':
         if request.COOKIES.get('test_cookie'):
             test_cookie = request.COOKIES.get('test_cookie')
-            res = JsonResponse({'MSG': 'COOKIE GET SUCCESS'}, status=200)
+            res = JsonResponse({'MSG': 'COOKIE GET SUCCESS', 'test_cookie': test_cookie}, status=200)
             print("get cookie: ", test_cookie)
             return res
         else:
