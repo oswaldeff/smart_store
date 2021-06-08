@@ -298,13 +298,13 @@ def User_delete(request):
 @csrf_exempt
 def cookie_set(request):
     if request.method == 'GET':
-        res = JsonResponse({'message': 'COOKIE SET SUCCESS'}, status=200)
+        res = HttpResponse('COOKIE SET SUCCESS', status=200)
         test_cookie = 'ThisIsTestCookie'
         res.set_cookie('test_cookie', value=test_cookie, max_age=60*60*24*1, expires=True, path='/', domain=None, httponly='False', samesite='Lax')
         print("set cookie complete!")
         return res
     else:
-        res = JsonResponse({'message': 'NOT AUTHORIZED METHOD'}, status=400)
+        res = HttpResponse('NOT AUTHORIZED METHOD', status=400)
         print("not authorized!")
         return res
 
@@ -313,14 +313,14 @@ def cookie_get(request):
     if request.method == 'GET':
         if request.COOKIES.get('test_cookie'):
             test_cookie = request.COOKIES.get('test_cookie')
-            res = JsonResponse({'message': 'COOKIE GET SUCCESS'}, status=200)
+            res = HttpResponse('COOKIE GET SUCCESS', status=200)
             print("get cookie: ", test_cookie)
             return res
         else:
-            res = JsonResponse({'message': 'FAIL'}, status=401)
+            res = HttpResponse('FAIL', status=401)
             print("Coudnt get cookie...")
             return res
     else:
-        res = JsonResponse({'message': 'NOT AUTHORIZED METHOD'}, status=400)
+        res = HttpResponse('NOT AUTHORIZED METHOD', status=400)
         print("not authorized!")
         return res
