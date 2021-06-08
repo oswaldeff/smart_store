@@ -206,13 +206,11 @@ CORS_ALLOW_HEADERS = [
     'accept-encoding',
     'authorization',
     'content-type',
-    'Content-Type',
     'dnt',
     'origin',
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
-    'X-Requested-With',
 ]
 
 # url pattern setting either with slash or without slash
