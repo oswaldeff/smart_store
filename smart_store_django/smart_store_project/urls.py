@@ -14,8 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-from smart_store_solution import views
+from django.urls import path
+from smart_store_solution import views, test
 
 urlpatterns = [
     path('admin', admin.site.urls),
@@ -30,11 +30,9 @@ urlpatterns = [
     path('merchandises/detail/<User_pk>/<id>/delete', views.MerchandiseRestfulDelete.as_view(), name='Merchandise_delete'),
     
     # kakao login & logout, user delete
-    path('accounts/login/kakao/test', views.kakao_login_test, name='kakao_login_test'),
-    path('accounts/login/kakao/callback/test', views.kakao_callback_test, name='kakao_callback_test'),
+    path('accounts/login/kakao/test', test.kakao_login_test, name='kakao_login_test'),
+    path('accounts/login/kakao/callback/test', test.kakao_callback_test, name='kakao_callback_test'),
     path('accounts/login/kakao/<access_token>', views.kakao_login, name='kakao_login'),
-    path('accounts/logout/kakao', views.kakao_logout, name='kakao_logout'),
+    # path('accounts/logout/kakao', views.kakao_logout, name='kakao_logout'),
     path('accounts/delete', views.User_delete, name='User_delete'),
-    path('cookies/set', views.cookie_set, name='cookie_set'),
-    path('cookies/get', views.cookie_get, name='cookie_get'),
 ]

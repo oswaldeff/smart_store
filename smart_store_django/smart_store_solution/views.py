@@ -10,49 +10,10 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.decorators import api_view
+from .jwt import jwt_publish, jwt_authorization
 
 # Create your views here.
 
-# json web token
-def jwt_publish(kakao_id, access_token):
-    access_jwt = jwt.encode({'exp': my_settings.JWT_AUTH['JWT_EXPIRATION_DELTA'], 'kakao_id': kakao_id}, my_settings.JWT_AUTH['JWT_SECRET_KEY']+access_token, algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
-    access_jwt = access_jwt.decode('utf-8')
-    #print("def)jwt_publish -> access_jwt: ", access_jwt)
-    return access_jwt
-
-def jwt_authorization(func):
-    def wrapper(self, request, *args, **kwargs):
-        #print('def)jwt_authorization -> inn')
-        try:
-            #if request.session.get('access_token'):
-            #    access_token = request.session['access_token']
-            #    #print("def)jwt_authorization -> access_token: ", access_token)
-            if request.COOKIES.get('access_token'):
-                access_token = request.COOKIES.get('access_token')
-            else:
-                return JsonResponse({'message': 'UNAUTHORIZED ACCESS TOKEN'}, status=401)
-            
-            access_jwt = request.COOKIES.get('access_jwt')
-            #print('def)jwt_authorization -> access_jwt: ', access_jwt)
-            payload = jwt.decode(access_jwt, my_settings.JWT_AUTH['JWT_SECRET_KEY']+access_token, algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
-            #print('def)jwt_authorization -> payload: ', payload)
-            login_user = User.objects.get(kakao_id=payload['kakao_id'])
-            #print('def)jwt_authorization -> login_user: ', login_user, ', type: ', type(login_user))
-            request.user = login_user
-            #print('def)jwt_authorization -> request.user(login_user): ', request.user)
-            
-            #print('def)jwt_authorization -> request.session[login_user]: ', request.session['login_user'])
-            
-            if request.session['login_user'] != str(request.user):
-                return JsonResponse({'message': 'UNAUTHORIZED USER'}, status=401)
-            #print('def)jwt_authorization ----------------> jwt authorization is passed')
-            return func(self, request, *args, **kwargs)
-        except jwt.ExpiredSignatureError:
-            return JsonResponse({'message': 'JWTOKEN EXPIRED'}, status=401)
-        except jwt.InvalidTokenError:
-            return JsonResponse({'message': 'INVALID JWTOKEN'}, status=401)
-    return wrapper
 
 # multiple lookup fields
 class MultipleFieldLookupMixin:
@@ -88,7 +49,6 @@ class UserRestfulMain(ListAPIView):
     @jwt_authorization
     def get(self, request, *args, **kwargs):
         serializer = self.serializer_class(request.user)
-        #logout(request) -> 세션 로그아웃을 해버리면 이후에 사용자는 재로그인을 해야하기때문에 불가
         #print('class UserRestfulMain(ListAPIView) -> serializer:', serializer)
         return Response(serializer.data, status=200)
 
@@ -169,158 +129,86 @@ class MerchandiseRestfulDelete(MultipleFieldLookupMixin, DestroyAPIView):
     @csrf_exempt
     @jwt_authorization
     def delete(self, request, *args, **kwargs):
-        request.data._mutable = True
         request.data['User_pk'] = int(str(request.user))
-        request.data._mutable = False
         self.destroy(request, *args, **kwargs)
         return JsonResponse({'message': 'MERCHANDISE DELETION SUCCESS'}, status=201)
 
 # social login(kakao)
 ## login
-def kakao_login_test(request):
-    api_key = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
-    # for TEST
-    redirect_uri = 'http://127.0.0.1:8000/accounts/login/kakao/callback/test'
-    dest_url = f'https://kauth.kakao.com/oauth/authorize?client_id={api_key}&redirect_uri={redirect_uri}&response_type=code'
-    return redirect(dest_url)
-
-def kakao_callback_test(request):
-    api_key = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
-    # for TEST
-    redirect_uri = 'http://127.0.0.1:8000/accounts/login/kakao/callback/test'
-    code = request.GET['code']
-    #print('def kakao_callback(request) -> code: ', code)
-    dest_url = f'https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id={api_key}&redirect_uri={redirect_uri}&code={code}'
-    
-    response = requests.get(dest_url)
-    response_json= response.json()
-    
-    # access_token
-    access_token = response_json['access_token']
-    #print('response_json[access_token]: ', type(response_json['access_token']))
-    return JsonResponse({'access_token': access_token})
-
 @csrf_exempt
 def kakao_login(request, access_token):
-    # create session
-    #request.session['access_token'] = access_token
-    
-    #print('response_json[access_token]: ', type(response_json['access_token']))
-    request.session.modified = True
-    profile_url = 'https://kapi.kakao.com/v2/user/me'
-    headers = {'Authorization' : f'Bearer {access_token}'}
-    
-    profile_request = requests.get(profile_url, headers=headers)
-    profile_json = profile_request.json()
-    
-    # User
-    ## check
-    kakao_id = profile_json['id']
-    nickname = profile_json['properties']['nickname']
-    User_search = User.objects.filter(kakao_id=kakao_id)
-    
-    ## create
-    if len(User_search) == 0:
-        User.objects.create(kakao_id=kakao_id, nickname=nickname)
-        #print('User create & login')
-        access_jwt = jwt_publish(kakao_id, access_token)
-    
-    ## login
-    if len(User_search) != 0:
-        #print('User login!')
-        # User_search.update(is_active=True)
-        access_jwt = jwt_publish(kakao_id, access_token)
-    
-    #response
-    response_status = JsonResponse({'message': 'LOGIN SUCCESS'}, status=201)
-    response_status.set_cookie('access_token', value=access_token, max_age=1000, expires=True, path='/', domain=None, secure=None, samesite='Lax') #httponly=True
-    response_status.set_cookie('access_jwt', value=access_jwt, max_age=1000, expires=True, path='/', domain=None, secure=None, samesite='Lax')
-    request.session['login_user'] = str(User.objects.get(kakao_id=kakao_id))
-    return response_status
+    if request.method == "POST":
+        request.session.modified = True
+        profile_url = 'https://kapi.kakao.com/v2/user/me'
+        headers = {'Authorization' : f'Bearer {access_token}'}
+        # profile
+        profile_request = requests.get(profile_url, headers=headers)
+        profile_json = profile_request.json()
+        # User
+        ## field values
+        kakao_id = profile_json['id']
+        nickname = profile_json['properties']['nickname']
+        User_search = User.objects.filter(kakao_id=kakao_id)
+        ## create
+        if len(User_search) == 0:
+            User.objects.create(kakao_id=kakao_id, nickname=nickname)
+            access_jwt = jwt_publish(kakao_id, access_token)
+        ## login
+        if len(User_search) != 0:
+            access_jwt = jwt_publish(kakao_id, access_token)
+        # headers
+        headers = {
+            'message': 'LOGIN SUCCESS',
+            'Authorization': {
+                'access_token': access_token,
+                'access_jwt': access_jwt
+                }
+            }
+        # response
+        response = JsonResponse(headers, status=201)
+        return response
+    else:
+        return JsonResponse({'message': 'UNAUTHORIZED METHOD'}, status=400)
 
 ## logout
-@csrf_exempt
-def kakao_logout(request):
-    #api_key = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
-    #redirect_uri = 'http://ec2-3-35-137-239.ap-northeast-2.compute.amazonaws.com'
-    # for TEST
-    #redirect_uri = 'http://127.0.0.1:8000'
-    access_token = request.COOKIES.get('access_token')
-    #dest_url = f'https://kauth.kakao.com/oauth/logout?client_id={api_key}&logout_redirect_uri={redirect_uri}'
-    #response = requests.get(dest_url)
+# @csrf_exempt
+# def kakao_logout(request):
+#     #api_key = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
+#     #redirect_uri = 'http://ec2-3-35-137-239.ap-northeast-2.compute.amazonaws.com'
+#     # for TEST
+#     #redirect_uri = 'http://127.0.0.1:8000'
+#     access_token = access_token
+#     #dest_url = f'https://kauth.kakao.com/oauth/logout?client_id={api_key}&logout_redirect_uri={redirect_uri}'
+#     #response = requests.get(dest_url)
     
-    profile_url = 'https://kapi.kakao.com/v2/user/me'
-    headers = {'Authorization' : f'Bearer {access_token}'}
-    profile_request = requests.get(profile_url, headers=headers)
-    profile_json = profile_request.json()
-    kakao_id = profile_json['id']
+#     profile_url = 'https://kapi.kakao.com/v2/user/me'
+#     headers = {'Authorization' : f'Bearer {access_token}'}
+#     profile_request = requests.get(profile_url, headers=headers)
+#     profile_json = profile_request.json()
+#     kakao_id = profile_json['id']
     
-    # logout User
-    # User_search = User.objects.filter(kakao_id=kakao_id)
-    # User_search.update(is_active=False)
-    
-    # del session
-    #print("logout -> del session start point")
-    #del request.session['access_token']
-    del request.session['login_user']
-    #print("logout -> del session pass point")
-    
-    # del cookie('access_jwt')
-    # token_reset = ''
-    # response_token = JsonResponse({'success':True})
-    # response_token.set_cookie('access_jwt', token_reset)
-    
-    return JsonResponse({'message': 'LOGOUT SUCCESS'}, status=201)
+#     return JsonResponse({'message': 'LOGOUT SUCCESS'}, status=201)
 
 ## leave service
+@csrf_exempt
+@jwt_authorization
 def User_delete(request):
-    access_token = request.session['access_token']
-    profile_url = 'https://kapi.kakao.com/v2/user/me'
-    headers = {'Authorization' : f'Bearer {access_token}'}
-    profile_request = requests.get(profile_url, headers=headers)
-    profile_json = profile_request.json()
-    kakao_id = profile_json['id']
-    
-    # Unlink kakao
-    #dest_url = 'https://kapi.kakao.com/v1/user/unlink'
-    #response = requests.get(dest_url, headers=headers)
-    
-    # del User
-    User_search = User.objects.filter(kakao_id=kakao_id)
-    User_search.delete()
-    
-    # del session
-    #del request.session['access_token']
-    del request.session['login_user']
-    
-    return JsonResponse({'message': 'USER DELETION SUCCESS'}, status=201)
-
-#@csrf_exempt
-def cookie_set(request):
-    if request.method == 'GET':
-        res = JsonResponse({'MSG': 'COOKIE SET SUCCESS'}, status=200)
-        test_cookie = 'ThisIsTestCookie'
-        res.set_cookie('test_cookie', value=test_cookie, max_age=60*60*24*1, expires=True, path='/') # domain='.amazonaws.com', httponly='False', samesite='Lax'
-        print("set cookie complete!")
-        return res
+    if request.method == "POST":
+        # access_token = request.session['access_token']
+        # profile_url = 'https://kapi.kakao.com/v2/user/me'
+        # headers = {'Authorization' : f'Bearer {access_token}'}
+        # profile_request = requests.get(profile_url, headers=headers)
+        # profile_json = profile_request.json()
+        # kakao_id = profile_json['id']
+        
+        # Unlink kakao
+        #dest_url = 'https://kapi.kakao.com/v1/user/unlink'
+        #response = requests.get(dest_url, headers=headers)
+        
+        # del User
+        User_pk = request.user
+        User_search = User.objects.filter(User_pk=User_pk)
+        User_search.delete()
+        return JsonResponse({'message': 'USER DELETION SUCCESS'}, status=201)
     else:
-        res = JsonResponse({'MSG': 'NOT AUTHORIZED METHOD'}, status=400)
-        print("not authorized!")
-        return res
-
-#@csrf_exempt
-def cookie_get(request):
-    if request.method == 'GET':
-        if request.COOKIES.get('test_cookie'):
-            test_cookie = request.COOKIES.get('test_cookie')
-            res = JsonResponse({'MSG': 'COOKIE GET SUCCESS', 'test_cookie': test_cookie}, status=200)
-            print("get cookie: ", test_cookie)
-            return res
-        else:
-            res = JsonResponse({'MSG': 'FAIL'}, status=401)
-            print("Coudnt get cookie...")
-            return res
-    else:
-        res = JsonResponse({'MSG': 'NOT AUTHORIZED METHOD'}, status=400)
-        print("not authorized!")
-        return res
+        return JsonResponse({'message': 'UNAUTHORIZED METHOD'}, status=400)
