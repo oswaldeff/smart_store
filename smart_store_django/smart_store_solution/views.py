@@ -139,8 +139,10 @@ class MerchandiseRestfulDelete(MultipleFieldLookupMixin, DestroyAPIView):
 def kakao_login(request):
     if request.method == 'GET':
         # access_token
-        if 'access_token' in request.COOKIES:
-            access_token = request.COOKIES['access_token']
+        if 'access_token' in request.session:
+            access_token = request.session['access_token']
+            print('request session: ', request.session)
+            print('access_token: ', access_token)
         else:
             return JsonResponse({"message": "COOKIE ERROR"}, status=400)
         
