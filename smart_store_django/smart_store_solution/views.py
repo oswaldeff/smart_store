@@ -137,38 +137,37 @@ class MerchandiseRestfulDelete(MultipleFieldLookupMixin, DestroyAPIView):
 ## login
 @csrf_exempt
 def kakao_login(request):
-    # access_token
-    if request.COOKIES.get('_kadu'):
-        kakao_cookie = request.COOKIES.get('_kadu')
-        print("kakao_cookie: ", kakao_cookie)
-    if request.COOKIES.get('access_token'):
-        access_token = request.COOKIES.get('access_token')
-        print("access_token: ", access_token)
+    if request.method == 'GET':
+        # access_token
+        try:
+                access_token = request.cookies['access_token']
+        except KeyError:
+                return JsonResponse({"message": "COOKIE ERROR"}, status=400)
+        
+        profile_url = 'https://kapi.kakao.com/v2/user/me'
+        headers = {'Authorization' : f'Bearer {access_token}'}
+        # profile
+        profile_request = requests.get(profile_url, headers=headers)
+        profile_json = profile_request.json()
+        # User
+        ## field values
+        kakao_id = profile_json['id']
+        nickname = profile_json['properties']['nickname']
+        User_search = User.objects.filter(kakao_id=kakao_id)
+        ## create
+        if len(User_search) == 0:
+            User.objects.create(kakao_id=kakao_id, nickname=nickname)
+            access_jwt = jwt_publish(kakao_id, access_token)
+        ## login
+        if len(User_search) != 0:
+            access_jwt = jwt_publish(kakao_id, access_token)
+        # headers
+        headers = {'message': 'LOGIN SUCCESS','Authorization': f'jwt {access_jwt}'}
+        # response
+        response = JsonResponse(headers, status=201)
+        return response
     else:
-        return JsonResponse({"message": "COOKIES ERROR"}, status=400)
-    
-    profile_url = 'https://kapi.kakao.com/v2/user/me'
-    headers = {'Authorization' : f'Bearer {access_token}'}
-    # profile
-    profile_request = requests.get(profile_url, headers=headers)
-    profile_json = profile_request.json()
-    # User
-    ## field values
-    kakao_id = profile_json['id']
-    nickname = profile_json['properties']['nickname']
-    User_search = User.objects.filter(kakao_id=kakao_id)
-    ## create
-    if len(User_search) == 0:
-        User.objects.create(kakao_id=kakao_id, nickname=nickname)
-        access_jwt = jwt_publish(kakao_id, access_token)
-    ## login
-    if len(User_search) != 0:
-        access_jwt = jwt_publish(kakao_id, access_token)
-    # headers
-    headers = {'message': 'LOGIN SUCCESS','Authorization': f'jwt {access_jwt}'}
-    # response
-    response = JsonResponse(headers, status=201)
-    return response
+        return JsonResponse({'message': 'UNAUTHORIZED HTTP METHOD'}, status=400)
 
 ## logout
 # @csrf_exempt
