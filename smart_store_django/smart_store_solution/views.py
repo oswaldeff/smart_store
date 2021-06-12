@@ -155,9 +155,12 @@ def kakao_login(request):
         profile_json = profile_request.json()
         # User
         ## field values
-        kakao_id = profile_json['id']
-        nickname = profile_json['properties']['nickname']
-        User_search = User.objects.filter(kakao_id=kakao_id)
+        try:
+            kakao_id = profile_json['id']
+            nickname = profile_json['properties']['nickname']
+            User_search = User.objects.filter(kakao_id=kakao_id)
+        except KeyError:
+            return JsonResponse({"message": "KAKAO PROFILE KEY ERROR"}, status=400)
         ## create
         if len(User_search) == 0:
             User.objects.create(kakao_id=kakao_id, nickname=nickname)
