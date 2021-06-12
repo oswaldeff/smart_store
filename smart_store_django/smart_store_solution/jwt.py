@@ -22,7 +22,8 @@ def jwt_authorization(func):
                 return JsonResponse({"message": "COOKIES KEY ERROR"}, status=400)
             # access_jwt
             try:
-                access_jwt = request.headers['Authorization']
+                Authorization = request.headers['Authorization']
+                access_jwt = Authorization.split(" ")[1]
             except KeyError:
                 return JsonResponse({"message": "HEADERS KEY ERROR"}, status=400)
             # decode

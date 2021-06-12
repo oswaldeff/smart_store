@@ -32,7 +32,7 @@ urlpatterns = [
     # kakao login & logout, user delete
     path('accounts/login/kakao/test', test.kakao_login_test, name='kakao_login_test'),
     path('accounts/login/kakao/callback/test', test.kakao_callback_test, name='kakao_callback_test'),
-    path('accounts/login/kakao/<access_token>', views.kakao_login, name='kakao_login'),
+    path('accounts/login/kakao', views.kakao_login, name='kakao_login'),
     # path('accounts/logout/kakao', views.kakao_logout, name='kakao_logout'),
     path('accounts/delete', views.User_delete, name='User_delete'),
 ]

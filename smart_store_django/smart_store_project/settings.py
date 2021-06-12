@@ -25,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['.compute.amazonaws.com', '.amazonaws.com', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['.compute.amazonaws.com', '.amazonaws.com', '127.0.0.1', 'localhost', '192.168.35.40']
 
 # Application definition
 
@@ -183,7 +183,7 @@ AUTH_USER_MODEL = 'smart_store_solution.User'
 
 # session setting
 #SESSION_COOKIE_SECURE = False ##??? if SECURE=True -> kakao logut error occurs...
-SESSION_COOKIE_DOMAIN = '.amazonaws.com'
+#SESSION_COOKIE_DOMAIN = '.amazonaws.com'
 SESSION_COOKIE_AGE = 18000
 SESSION_SAVE_EVERY_REQUEST = True
 
@@ -222,8 +222,8 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_HTTPONLY = False
 SESSION_COOKIE_HTTPONLY = False
 
-CSRF_COOKIE_DOMAIN = ".amazonaws.com"
-SESSION_COOKIE_DOMAIN = ".amazonaws.com"
+#CSRF_COOKIE_DOMAIN = ".amazonaws.com"
+#SESSION_COOKIE_DOMAIN = ".amazonaws.com"
 
 CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SECURE = False

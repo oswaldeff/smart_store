@@ -136,9 +136,17 @@ class MerchandiseRestfulDelete(MultipleFieldLookupMixin, DestroyAPIView):
 # social login(kakao)
 ## login
 @csrf_exempt
-def kakao_login(request, access_token):
+def kakao_login(request):
     if request.method == "POST":
-        request.session.modified = True
+        # access_token
+        try:
+            all_cookies = request.COOKIES
+            print(all_cookies)
+            access_token = request.COOKIES['access_token']
+            print('access_token: ', access_token)
+        except KeyError:
+            return JsonResponse({"message": "COOKIES KEY ERROR"}, status=400)
+        
         profile_url = 'https://kapi.kakao.com/v2/user/me'
         headers = {'Authorization' : f'Bearer {access_token}'}
         # profile
@@ -157,10 +165,7 @@ def kakao_login(request, access_token):
         if len(User_search) != 0:
             access_jwt = jwt_publish(kakao_id, access_token)
         # headers
-        headers = {
-            'message': 'LOGIN SUCCESS',
-            'Authorization': access_jwt
-        }
+        headers = {'message': 'LOGIN SUCCESS','Authorization': f'jwt {access_jwt}'}
         # response
         response = JsonResponse(headers, status=201)
         return response
