@@ -139,10 +139,10 @@ class MerchandiseRestfulDelete(MultipleFieldLookupMixin, DestroyAPIView):
 def kakao_login(request):
     if request.method == 'GET':
         # access_token
-        try:
-                access_token = request.cookies['access_token']
-        except KeyError:
-                return JsonResponse({"message": "COOKIE ERROR"}, status=400)
+        if request.cookies.get('access_token'):
+            access_token = request.cookies.get('access_token')
+        else:
+            return JsonResponse({"message": "COOKIE ERROR"}, status=400)
         
         profile_url = 'https://kapi.kakao.com/v2/user/me'
         headers = {'Authorization' : f'Bearer {access_token}'}
