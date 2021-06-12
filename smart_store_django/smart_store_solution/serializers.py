@@ -8,7 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             'User_pk',
             'kakao_id',
-            'nickname'
+            'nickname',
             )
 
 # Merchandise classes

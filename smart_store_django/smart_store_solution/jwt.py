@@ -15,20 +15,20 @@ def jwt_authorization(func):
     def wrapper(self, request, *args, **kwargs):
         #print('def)jwt_authorization -> inn')
         try:
+            # access_token
             try:
-                headers = request.headers['Authorization']
-                headers = json.loads(headers)
-                access_token = headers['access_token']
-                access_jwt = headers['access_jwt']
+                access_token = request.cookies['access_token']
             except KeyError:
-                return JsonResponse({"message": "AUTHORIZATION KEY ERROR"}, status=400)
-            
+                return JsonResponse({"message": "COOKIES KEY ERROR"}, status=400)
+            # access_jwt
+            try:
+                access_jwt = request.headers['Authorization']
+            except KeyError:
+                return JsonResponse({"message": "HEADERS KEY ERROR"}, status=400)
+            # decode
             payload = jwt.decode(access_jwt, my_settings.JWT_AUTH['JWT_SECRET_KEY']+access_token, algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
-            #print('def)jwt_authorization -> payload: ', payload)
             login_user = User.objects.get(kakao_id=payload['kakao_id'])
-            #print('def)jwt_authorization -> login_user: ', login_user, ', type: ', type(login_user))
             request.user = login_user
-            #print('def)jwt_authorization -> request.user(login_user): ', request.user)
             return func(self, request, *args, **kwargs)
         except jwt.ExpiredSignatureError:
             return JsonResponse({'message': 'JWTOKEN EXPIRED'}, status=401)

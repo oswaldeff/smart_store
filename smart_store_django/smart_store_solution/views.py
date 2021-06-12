@@ -159,11 +159,8 @@ def kakao_login(request, access_token):
         # headers
         headers = {
             'message': 'LOGIN SUCCESS',
-            'Authorization': {
-                'access_token': access_token,
-                'access_jwt': access_jwt
-                }
-            }
+            'Authorization': access_jwt
+        }
         # response
         response = JsonResponse(headers, status=201)
         return response
