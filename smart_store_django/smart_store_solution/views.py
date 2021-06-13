@@ -149,7 +149,7 @@ def kakao_login(request):
             print('from cookie: ', access_token)
         else:
             return JsonResponse({"message": "COOKIE ERROR"}, status=400)
-        
+        request.session.modified = True
         profile_url = 'https://kapi.kakao.com/v2/user/me'
         headers = {'Authorization' : f'Bearer {access_token}'}
         # profile
