@@ -140,7 +140,7 @@ def kakao_login(request):
     if request.method == 'GET':
         # access_token
         print('req session: ', request.session)
-        print('req cookie: ', request.COOKIES)
+        print('req cookie: ', request)
         if 'access_token' in request.session:
             access_token = request.session['access_token']
             print('from session: ', access_token)
