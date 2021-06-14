@@ -141,6 +141,7 @@ def kakao_login(request):
         # access_token
         print('req session: ', request.session)
         print('req header: ', request.headers)
+        print('req Authorization: ', request.headers['Authorization'])
         print('req cookie: ', request.COOKIES)
         if 'access_token' in request.session:
             access_token = request.session['access_token']
