@@ -145,7 +145,7 @@ def kakao_login(request):
         print('req cookie: ', request.COOKIES)
         req = requests.get("http://smartstore-test90.s3-website.ap-northeast-2.amazonaws.com")
         cookie = req.cookies
-        pirnt("Req cookies: ", cookie )
+        print("Req cookies: ", cookie )
         if 'access_token' in request.session:
             access_token = request.session['access_token']
             print('from session: ', access_token)
