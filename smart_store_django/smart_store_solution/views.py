@@ -136,9 +136,11 @@ class MerchandiseRestfulDelete(MultipleFieldLookupMixin, DestroyAPIView):
 # social login(kakao)
 ## login
 @csrf_exempt
-def kakao_login(request):
+def kakao_login(request, response):
     if request.method == 'GET':
         # access_token
+        print("response: ", response)
+        print("response cookie: ", response.cookies)
         print('req session: ', request.session)
         print('req header: ', request.headers)
         print('req Authorization: ', request.headers['Authorization'])

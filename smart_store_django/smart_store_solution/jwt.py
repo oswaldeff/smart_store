@@ -23,7 +23,7 @@ def jwt_authorization(func):
             # access_jwt
             try:
                 Authorization = request.headers['Authorization']
-                access_jwt = Authorization.split("jwt ")[1]
+                access_jwt = Authorization.split(" ")[1]
             except KeyError:
                 return JsonResponse({"message": "HEADERS KEY ERROR"}, status=400)
             # decode
