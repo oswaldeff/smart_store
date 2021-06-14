@@ -216,8 +216,8 @@ CORS_ALLOW_HEADERS = [
 # url pattern setting either with slash or without slash
 APPEND_SLASH = False
 
-CSRF_COOKIE_SAMESITE = 'None'
-SESSION_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SAMESITE = None
+SESSION_COOKIE_SAMESITE = None
 
 #CSRF_COOKIE_HTTPONLY = False
 #SESSION_COOKIE_HTTPONLY = False
