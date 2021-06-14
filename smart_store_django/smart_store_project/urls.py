@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from smart_store_solution import views, test
+from smart_store_solution import views, tests
 
 urlpatterns = [
     path('admin', admin.site.urls),
@@ -30,8 +30,8 @@ urlpatterns = [
     path('merchandises/detail/<User_pk>/<id>/delete', views.MerchandiseRestfulDelete.as_view(), name='Merchandise_delete'),
     
     # kakao login & logout, user delete
-    path('accounts/login/kakao/test', test.kakao_login_test, name='kakao_login_test'),
-    path('accounts/login/kakao/callback/test', test.kakao_callback_test, name='kakao_callback_test'),
+    path('accounts/login/kakao/test', tests.kakao_login_test, name='kakao_login_test'),
+    path('accounts/login/kakao/callback/test', tests.kakao_callback_test, name='kakao_callback_test'),
     path('accounts/login/kakao', views.kakao_login, name='kakao_login'),
     # path('accounts/logout/kakao', views.kakao_logout, name='kakao_logout'),
     path('accounts/delete', views.User_delete, name='User_delete'),
