@@ -183,7 +183,7 @@ AUTH_USER_MODEL = 'smart_store_solution.User'
 
 # session setting
 #SESSION_COOKIE_SECURE = False ##??? if SECURE=True -> kakao logut error occurs...
-SESSION_COOKIE_DOMAIN = '.amazonaws.com'
+SESSION_COOKIE_DOMAIN = ".amazonaws.com"
 SESSION_COOKIE_AGE = 18000
 SESSION_SAVE_EVERY_REQUEST = True
 
