@@ -216,8 +216,6 @@ CORS_ALLOW_HEADERS = [
 # url pattern setting either with slash or without slash
 APPEND_SLASH = False
 
-SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
-
 CSRF_COOKIE_SAMESITE = 'None'
 SESSION_COOKIE_SAMESITE = 'None'
 
