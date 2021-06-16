@@ -135,6 +135,7 @@ def kakao_login(request):
         try:
             access_token = request.headers['Cookies']
             print('from cookie: ', access_token)
+            print('from cookie type: ', type(access_token))
         except:
             return JsonResponse({"message": "COOKIE ERROR"}, status=400)
         
@@ -164,6 +165,7 @@ def kakao_login(request):
         # response
         response = JsonResponse(headers, status=201)
         response.set_cookie('access_jwt', access_jwt)
+        response['access_jwt'] = access_jwt
         return response
     else:
         return JsonResponse({'message': 'UNAUTHORIZED HTTP METHOD'}, status=400)
