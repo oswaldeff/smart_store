@@ -214,7 +214,7 @@ CORS_ALLOW_HEADERS = [
 'x-requested-with',
 'Access-Control-Allow-Origin',
 'cookies',
-'access_token',
+'tk',
 ]
 
 # url pattern setting either with slash or without slash
