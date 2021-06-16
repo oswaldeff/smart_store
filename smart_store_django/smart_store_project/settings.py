@@ -28,7 +28,7 @@ SECRET_KEY = KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['.compute.amazonaws.com', '.amazonaws.com', '127.0.0.1', 'localhost', '192.168.35.40']
+ALLOWED_HOSTS = ['.compute.amazonaws.com', '.amazonaws.com', '127.0.0.1', 'localhost', 'localhost:3000', 'localhost:8000', 'smartstore-test90.s3-website.ap-northeast-2.amazonaws.com', '192.168.35.40']
 
 # Application definition
 
@@ -202,22 +202,18 @@ CORS_ALLOW_METHODS = [
     'PUT',
 ]
 
-# CORS_ALLOW_HEADERS = [
-#     'accept',
-#     'accept-encoding',
-#     'authorization',
-#     'content-type',
-#     'dnt',
-#     'origin',
-#     'user-agent',
-#     'x-csrftoken',
-#     'x-requested-with',
-#     'Access-Control-Allow-Origin',
-#     'cookies',
-#     'cookie',
-# ]
-
-CORS_ALLOW_HEADERS = list(default_headers) + ['Access-Control-Allow-Origin',]
+CORS_ALLOW_HEADERS = [
+'accept',
+'accept-encoding',
+'authorization',
+'content-type',
+'dnt',
+'origin',
+'user-agent',
+'x-csrftoken',
+'x-requested-with',
+'Access-Control-Allow-Origin',
+]
 
 # url pattern setting either with slash or without slash
 APPEND_SLASH = False
