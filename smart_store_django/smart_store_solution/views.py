@@ -165,6 +165,7 @@ def kakao_login(request):
         #response = JsonResponse(headers, status=201)
         data = 'LOGIN SUCCESS'
         headers = {'set-cookie': access_jwt}
+        
         response = HttpResponse(data, headers=headers)
         #response = HttpResponse.set_cookie('access_jwt', access_jwt)
         #response.headers['Cookies'] = access_jwt
