@@ -17,9 +17,9 @@ def jwt_authorization(func):
         try:
             # access_token
             try:
-                access_token = request.session['access_token']
+                access_token = request.cookies['access_token']
             except KeyError:
-                return JsonResponse({"message": "SESSION KEY ERROR"}, status=400)
+                return JsonResponse({"message": "COOKIES KEY ERROR"}, status=400)
             # access_jwt
             try:
                 Authorization = request.headers['Authorization']
