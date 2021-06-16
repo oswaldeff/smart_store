@@ -16,12 +16,14 @@ def jwt_authorization(func):
             # access_token
             try:
                 access_token = request.headers['Tk']
+                print("JWT inn access_token: ", access_token)
             except KeyError:
                 return JsonResponse({"message": "HEADERS TK KEY ERROR"}, status=400)
             # access_jwt
             try:
                 Authorization = request.headers['Authorization']
-                access_jwt = Authorization.split(" ")[1]
+                access_jwt = Authorization.split("jwt ")[1]
+                print("JWT inn access_jwt: ", access_jwt)
             except KeyError:
                 return JsonResponse({"message": "HEADERS JWT KEY ERROR"}, status=400)
             # decode
