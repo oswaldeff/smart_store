@@ -14,6 +14,7 @@ from pathlib import Path
 from .my_settings import KEY, SOCIALACCOUNTS, DB, WHITELIST
 import os
 import pymysql
+from corsheaders.defaults import default_headers
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -201,20 +202,22 @@ CORS_ALLOW_METHODS = [
     'PUT',
 ]
 
-CORS_ALLOW_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
-    'Access-Control-Allow-Origin',
-    'cookies',
-    'cookie',
-]
+# CORS_ALLOW_HEADERS = [
+#     'accept',
+#     'accept-encoding',
+#     'authorization',
+#     'content-type',
+#     'dnt',
+#     'origin',
+#     'user-agent',
+#     'x-csrftoken',
+#     'x-requested-with',
+#     'Access-Control-Allow-Origin',
+#     'cookies',
+#     'cookie',
+# ]
+
+CORS_ALLOW_HEADERS = list(default_headers) + ['Access-Control-Allow-Origin',]
 
 # url pattern setting either with slash or without slash
 APPEND_SLASH = False
