@@ -128,18 +128,14 @@ class MerchandiseRestfulDelete(MultipleFieldLookupMixin, DestroyAPIView):
 def kakao_login(request):
     if request.method == 'GET':
         # access_token
-        print('req session: ', request.session)
-        print(request.session.items())
         print('req header: ', request.headers)
         print('req Authorization: ', request.headers['Authorization'])
+        print('req Cookies: ', request.headers['Cookies'])
         print('req cookie: ', request.COOKIES)
-        if 'access_token' in request.session:
-            access_token = request.session['access_token']
-            print('from session: ', access_token)
-        if 'access_token' in request.COOKIES:
-            access_token = request.COOKIES['access_token']
+        try:
+            access_token = request.headers['Cookies']
             print('from cookie: ', access_token)
-        else:
+        except:
             return JsonResponse({"message": "COOKIE ERROR"}, status=400)
         
         request.session.modified = True
@@ -167,6 +163,7 @@ def kakao_login(request):
         headers = {'message': 'LOGIN SUCCESS','Authorization': f'jwt {access_jwt}'}
         # response
         response = JsonResponse(headers, status=201)
+        response.set_cookie('jwt', access_jwt)
         return response
     else:
         return JsonResponse({'message': 'UNAUTHORIZED HTTP METHOD'}, status=400)
