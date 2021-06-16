@@ -130,7 +130,6 @@ def kakao_login(request):
         # access_token
         print('req header: ', request.headers)
         print('req Authorization: ', request.headers['Authorization'])
-        #print('req Cookies: ', request.headers['Cookies'])
         print('req cookie: ', request.COOKIES)
         try:
             access_token = request.headers['tk']
@@ -163,7 +162,7 @@ def kakao_login(request):
         #headers = {'message': 'LOGIN SUCCESS','Authorization': f'jwt {access_jwt}'}
         # response
         #response = JsonResponse(headers, status=201)
-        response = HttpResponse('LOGIN SUCCESS')
+        response = JsonResponse({'message': 'LOGIN SUCCESS'}, status=201)
         response.set_cookie('access_jwt', value=access_jwt, max_age=60*60*24*7, expires=None, path='/', domain='.amazonaws.com', secure='None', httponly=False, samesite='None')
         #response = HttpResponse.set_cookie('access_jwt', access_jwt)
         #response.headers['Cookies'] = access_jwt

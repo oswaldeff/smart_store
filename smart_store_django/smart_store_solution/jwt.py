@@ -17,13 +17,13 @@ def jwt_authorization(func):
             try:
                 access_token = request.headers['tk']
             except KeyError:
-                return JsonResponse({"message": "COOKIES KEY ERROR"}, status=400)
+                return JsonResponse({"message": "HEADERS TK KEY ERROR"}, status=400)
             # access_jwt
             try:
                 Authorization = request.headers['Authorization']
                 access_jwt = Authorization.split(" ")[1]
             except KeyError:
-                return JsonResponse({"message": "HEADERS KEY ERROR"}, status=400)
+                return JsonResponse({"message": "HEADERS JWT KEY ERROR"}, status=400)
             # decode
             payload = jwt.decode(access_jwt, my_settings.JWT_AUTH['JWT_SECRET_KEY']+access_token, algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
             login_user = User.objects.get(kakao_id=payload['kakao_id'])
