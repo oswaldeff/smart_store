@@ -21,21 +21,17 @@ class MultipleFieldLookupMixin:
     Apply this mixin to any view or viewset to get multiple field filtering
     based on a `lookup_fields` attribute, instead of the default single field filtering.
     """
-    
     def get_object(self):
         queryset = self.get_queryset()             # Get the base queryset
         queryset = self.filter_queryset(queryset)  # Apply any filter backends
-        #print('class MultipleFieldLookupMixin) -> queryset: ', queryset)
+        
         filter = {}
         for field in self.lookup_fields:
-            #print('class MultipleFieldLookupMixin) -> field: ', field)
             if self.kwargs[field]: # Ignore empty fields.
                 filter[field] = self.kwargs[field]
-        #print('class MultipleFieldLookupMixin) -> filter: ', filter)
+        
         obj = get_object_or_404(queryset, **filter)  # Lookup the object
-        #print('class MultipleFieldLookupMixin) -> obj : ', obj)
         self.check_object_permissions(self.request, obj)
-        #print('class MultipleFieldLookupMixin) ->  obj permission is accepted')
         return obj
 
 # User classes
@@ -49,7 +45,6 @@ class UserRestfulMain(ListAPIView):
     @jwt_authorization
     def get(self, request, *args, **kwargs):
         serializer = self.serializer_class(request.user)
-        #print('class UserRestfulMain(ListAPIView) -> serializer:', serializer)
         return Response(serializer.data, status=200)
 
 # Merchandise classes
@@ -62,8 +57,6 @@ class MerchandiseRestfulCreate(CreateAPIView):
     @csrf_exempt
     @jwt_authorization
     def post(self, request, *args, **kwargs):
-        #print('class MerchandiseRestfulCreate(CreateAPIView) -> request data: ', request.data)
-        #print('class MerchandiseRestfulCreate(CreateAPIView) -> request data[User_pk]: ', request.data['User_pk'], type(request.data['User_pk']))
         request.data['User_pk'] = int(str(request.user))
         self.create(request, *args, **kwargs)
         return JsonResponse({'message': 'MERCHANDISE CREATION SUCCESS'}, status=201)
@@ -81,7 +74,6 @@ class MerchandiseRestfulMain(ListAPIView):
         datas = []
         for m in Merchandise.objects.filter(User_pk=request.user):
             serializer = self.serializer_class(m)
-            #print('class MerchandiseRestfulMain(ListAPIView) -> merchandises: ', m)
             datas.append(serializer.data)
         return Response(datas, status=200)
 
@@ -94,9 +86,7 @@ class MerchandiseRestfulDetail(MultipleFieldLookupMixin, RetrieveAPIView):
     @csrf_exempt
     @jwt_authorization
     def get(self, request, *args, **kwargs):
-        try: 
-            #print('class MerchandiseRestfulDetail(MultipleFieldLookupMixin, RetrieveAPIView) -> MultipleFieldLookupMixin.get_object(self): ', MultipleFieldLookupMixin.get_object(self))
-            #print('class MerchandiseRestfulDetail(MultipleFieldLookupMixin, RetrieveAPIView) -> Merchandise.objects.filter(User_pk=request.user): ', Merchandise.objects.filter(User_pk=request.user))
+        try:
             if MultipleFieldLookupMixin.get_object(self) in Merchandise.objects.filter(User_pk=request.user):
                 serializer = self.serializer_class(MultipleFieldLookupMixin.get_object(self))
             return Response(serializer.data, status=200)
@@ -113,7 +103,6 @@ class MerchandiseRestfulUpdate(MultipleFieldLookupMixin, UpdateAPIView):
     @csrf_exempt
     @jwt_authorization
     def put(self, request, *args, **kwargs):
-        #print('class MerchandiseRestfulUpdate(MultipleFieldLookupMixin, UpdateAPIView) -> request data: ',request.data)
         request.data['User_pk'] = int(str(request.user))
         self.update(request, *args, **kwargs)
         return JsonResponse({'message': 'MERCHANDISE UPDATE SUCCESS'}, status=201)
@@ -152,6 +141,7 @@ def kakao_login(request):
             print('from cookie: ', access_token)
         else:
             return JsonResponse({"message": "COOKIE ERROR"}, status=400)
+        
         request.session.modified = True
         profile_url = 'https://kapi.kakao.com/v2/user/me'
         headers = {'Authorization' : f'Bearer {access_token}'}
