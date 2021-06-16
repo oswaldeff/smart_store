@@ -163,11 +163,8 @@ def kakao_login(request):
         #headers = {'message': 'LOGIN SUCCESS','Authorization': f'jwt {access_jwt}'}
         # response
         #response = JsonResponse(headers, status=201)
-        data = 'LOGIN SUCCESS'
-        headers = {'set-cookie': {'access_jwt': access_jwt} }
-
-        response = HttpResponse(data, headers=headers)
-        response.set_cookie('access_jwt', value=access_jwt)
+        response = HttpResponse('LOGIN SUCCESS')
+        response.set_cookie('access_jwt', value=access_jwt, max_age=60*60*24*7, expires=None, path='/', domain='http://smartstore-test90.s3-website.ap-northeast-2.amazonaws.com', secure=False, httponly=False, samesite=None)
         #response = HttpResponse.set_cookie('access_jwt', access_jwt)
         #response.headers['Cookies'] = access_jwt
         return response
