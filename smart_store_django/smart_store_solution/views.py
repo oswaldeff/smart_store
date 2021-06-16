@@ -132,7 +132,7 @@ def kakao_login(request):
         print('req Authorization: ', request.headers['Authorization'])
         print('req cookie: ', request.COOKIES)
         try:
-            access_token = request.headers['tk']
+            access_token = request.headers['Tk']
             print('from cookie: ', access_token)
         except:
             return JsonResponse({"message": "COOKIE ERROR"}, status=400)

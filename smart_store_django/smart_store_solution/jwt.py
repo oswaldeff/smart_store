@@ -15,7 +15,7 @@ def jwt_authorization(func):
         try:
             # access_token
             try:
-                access_token = request.headers['tk']
+                access_token = request.headers['Tk']
             except KeyError:
                 return JsonResponse({"message": "HEADERS TK KEY ERROR"}, status=400)
             # access_jwt
