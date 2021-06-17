@@ -158,6 +158,7 @@ def kakao_login(request):
         ## login
         if len(User_search) != 0:
             access_jwt = jwt_publish(kakao_id, access_token)
+        print('access_jwt: ', access_jwt)
         # headers
         headers = {'message': 'LOGIN SUCCESS','Authorization': f'jwt {access_jwt}'}
         # response
