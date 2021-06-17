@@ -10,10 +10,42 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from django.views.decorators.csrf import csrf_exempt
-from .jwt import jwt_publish, jwt_authorization
+# from .jwt import jwt_publish, jwt_authorization
 
 # Create your views here.
 
+def jwt_publish(kakao_id, access_token):
+    access_jwt = jwt.encode({'exp': my_settings.JWT_AUTH['JWT_EXPIRATION_DELTA'], 'kakao_id': kakao_id}, my_settings.JWT_AUTH['JWT_SECRET_KEY']+access_token, algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
+    access_jwt = access_jwt.decode('utf-8')
+    return access_jwt
+
+def jwt_authorization(func):
+    print("jwt inn")
+    def wrapper(self, request, *args, **kwargs):
+        try:
+            # access_token
+            try:
+                access_token = request.headers['Tk']
+                print("JWT inn access_token: ", access_token)
+            except KeyError:
+                return JsonResponse({"message": "HEADERS TK KEY ERROR"}, status=400)
+            # access_jwt
+            try:
+                Authorization = request.headers['Authorization']
+                access_jwt = Authorization.split("jwt ")[1]
+                print("JWT inn access_jwt: ", access_jwt)
+            except KeyError:
+                return JsonResponse({"message": "HEADERS JWT KEY ERROR"}, status=400)
+            # decode
+            payload = jwt.decode(access_jwt, my_settings.JWT_AUTH['JWT_SECRET_KEY']+access_token, algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
+            login_user = User.objects.get(kakao_id=payload['kakao_id'])
+            request.user = login_user
+            return func(self, request, *args, **kwargs)
+        except jwt.ExpiredSignatureError:
+            return JsonResponse({'message': 'JWTOKEN EXPIRED'}, status=401)
+        except jwt.InvalidTokenError:
+            return JsonResponse({'message': 'INVALID JWTOKEN'}, status=401)
+    return wrapper
 
 # multiple lookup fields
 class MultipleFieldLookupMixin:
@@ -40,7 +72,7 @@ class UserRestfulMain(ListAPIView):
     permission_classes = [AllowAny]
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    
+
     @csrf_exempt
     @jwt_authorization
     def get(self, request, *args, **kwargs):
