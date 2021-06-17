@@ -11,6 +11,7 @@ def jwt_publish(kakao_id, access_token):
     return access_jwt
 
 def jwt_authorization(func):
+    print("jwt inn")
     def wrapper(self, request, *args, **kwargs):
         try:
             # access_token
