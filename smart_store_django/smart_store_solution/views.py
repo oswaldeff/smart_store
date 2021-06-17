@@ -40,7 +40,7 @@ class UserRestfulMain(ListAPIView):
     permission_classes = [AllowAny]
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    
+
     @csrf_exempt
     @jwt_authorization
     def get(self, request, *args, **kwargs):
@@ -128,12 +128,8 @@ class MerchandiseRestfulDelete(MultipleFieldLookupMixin, DestroyAPIView):
 def kakao_login(request):
     if request.method == 'GET':
         # access_token
-        print('req header: ', request.headers)
-        print('req Authorization: ', request.headers['Authorization'])
-        print('req cookie: ', request.COOKIES)
         try:
             access_token = request.headers['Tk']
-            print('from cookie: ', access_token)
         except:
             return JsonResponse({"message": "COOKIE ERROR"}, status=400)
         
@@ -167,25 +163,6 @@ def kakao_login(request):
         return response
     else:
         return JsonResponse({'message': 'UNAUTHORIZED HTTP METHOD'}, status=400)
-
-## logout
-# @csrf_exempt
-# def kakao_logout(request):
-#     #api_key = my_settings.SOCIALACCOUNTS['kakao']['app']['client_id']
-#     #redirect_uri = 'http://ec2-3-35-137-239.ap-northeast-2.compute.amazonaws.com'
-#     # for TEST
-#     #redirect_uri = 'http://127.0.0.1:8000'
-#     access_token = access_token
-#     #dest_url = f'https://kauth.kakao.com/oauth/logout?client_id={api_key}&logout_redirect_uri={redirect_uri}'
-#     #response = requests.get(dest_url)
-    
-#     profile_url = 'https://kapi.kakao.com/v2/user/me'
-#     headers = {'Authorization' : f'Bearer {access_token}'}
-#     profile_request = requests.get(profile_url, headers=headers)
-#     profile_json = profile_request.json()
-#     kakao_id = profile_json['id']
-    
-#     return JsonResponse({'message': 'LOGOUT SUCCESS'}, status=201)
 
 ## leave service
 @csrf_exempt
