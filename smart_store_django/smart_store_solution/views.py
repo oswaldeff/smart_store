@@ -40,10 +40,13 @@ class UserRestfulMain(ListAPIView):
     permission_classes = [AllowAny]
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    
+    print("UserRestfulMain 1 inn")
     @csrf_exempt
+    print("UserRestfulMain 2 inn")
     @jwt_authorization
+    print("UserRestfulMain 3 inn")
     def get(self, request, *args, **kwargs):
+        print("UserRestfulMain 4 inn")
         serializer = self.serializer_class(request.user)
         return Response(serializer.data, status=200)
 
