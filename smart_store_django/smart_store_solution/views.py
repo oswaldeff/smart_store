@@ -111,7 +111,7 @@ class MerchandiseRestfulUpdate(MultipleFieldLookupMixin, UpdateAPIView):
 ## Delete
 class MerchandiseRestfulDelete(MultipleFieldLookupMixin, DestroyAPIView):
     permission_classes = [AllowAny]
-    lookup_fields = ['User_pk', 'id']
+    lookup_field = 'id'
     queryset = Merchandise.objects.all()
     serializer_class = MerchandiseSerializer
     
