@@ -25,9 +25,9 @@ urlpatterns = [
     # merchandise
     path('merchandises', views.MerchandiseRestfulMain.as_view(), name='Merchandise_list'),
     path('merchandises/update', views.MerchandiseRestfulCreate.as_view(), name='Merchandise_create'),
-    path('merchandises/detail/<User_pk>/<id>', views.MerchandiseRestfulDetail.as_view(), name='Merchandise_detail'),
+    # path('merchandises/detail/<User_pk>/<id>', views.MerchandiseRestfulDetail.as_view(), name='Merchandise_detail'),
     path('merchandises/update/<id>', views.MerchandiseRestfulUpdate.as_view(), name='Merchandise_update'),
-    path('merchandises/detail/<User_pk>/<id>/delete', views.MerchandiseRestfulDelete.as_view(), name='Merchandise_delete'),
+    path('merchandises/delete/<id>', views.MerchandiseRestfulDelete.as_view(), name='Merchandise_delete'),
     
     # kakao login & logout, user delete
     path('accounts/login/kakao/test', tests.kakao_login_test, name='kakao_login_test'),
