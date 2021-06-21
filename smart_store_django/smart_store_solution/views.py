@@ -95,9 +95,9 @@ class MerchandiseRestfulDetail(MultipleFieldLookupMixin, RetrieveAPIView):
             return JsonResponse({'message': 'NOT FOUND'}, status=404)
 
 ## Update
-class MerchandiseRestfulUpdate(MultipleFieldLookupMixin, UpdateAPIView):
+class MerchandiseRestfulUpdate(UpdateAPIView): # MultipleFieldLookupMixin,
     permission_classes = [AllowAny]
-    lookup_fields = ['User_pk', 'id']
+    lookup_field = 'id'
     queryset = Merchandise.objects.all()
     serializer_class = MerchandiseSerializer
     
@@ -111,9 +111,9 @@ class MerchandiseRestfulUpdate(MultipleFieldLookupMixin, UpdateAPIView):
 
 
 ## Delete
-class MerchandiseRestfulDelete(MultipleFieldLookupMixin, DestroyAPIView):
+class MerchandiseRestfulDelete(DestroyAPIView): # MultipleFieldLookupMixin,
     permission_classes = [AllowAny]
-    lookup_fields = ['User_pk', 'id']
+    lookup_field = 'id'
     queryset = Merchandise.objects.all()
     serializer_class = MerchandiseSerializer
     
