@@ -104,7 +104,6 @@ class MerchandiseRestfulUpdate(UpdateAPIView): # MultipleFieldLookupMixin,
     @csrf_exempt
     @jwt_authorization
     def put(self, request, *args, **kwargs):
-        print("Merchandise Update inn")
         request.data['User_pk'] = int(str(request.user))
         self.update(request, *args, **kwargs)
         return JsonResponse({'message': 'MERCHANDISE UPDATE SUCCESS'}, status=201)
@@ -120,7 +119,6 @@ class MerchandiseRestfulDelete(DestroyAPIView): # MultipleFieldLookupMixin,
     @csrf_exempt
     @jwt_authorization
     def delete(self, request, *args, **kwargs):
-        print("Merchandise Delete inn")
         request.data['User_pk'] = int(str(request.user))
         self.destroy(request, *args, **kwargs)
         return JsonResponse({'message': 'MERCHANDISE DELETION SUCCESS'}, status=201)
@@ -151,14 +149,13 @@ def kakao_login(request):
         except KeyError:
             return JsonResponse({"message": "KAKAO PROFILE KEY ERROR"}, status=400)
         ## create
+        period = datetime.datetime.utcnow() + datetime.timedelta(seconds=21599)
         if len(User_search) == 0:
             User.objects.create(kakao_id=kakao_id, nickname=nickname)
-            access_jwt = jwt_publish(kakao_id, access_token)
+            access_jwt = jwt_publish(kakao_id, access_token, period)
         ## login
         if len(User_search) != 0:
-            access_jwt = jwt_publish(kakao_id, access_token)
-        print('access_jwt: ', access_jwt)
-        print('datetime now: ', datetime.datetime.utcnow() + datetime.timedelta(seconds=21599))
+            access_jwt = jwt_publish(kakao_id, access_token, period)
         # headers
         headers = {'message': 'LOGIN SUCCESS','Authorization': f'jwt {access_jwt}'}
         # response
