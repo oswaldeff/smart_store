@@ -40,7 +40,7 @@ class UserRestfulMain(ListAPIView):
     permission_classes = [AllowAny]
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
+    
     @csrf_exempt
     @jwt_authorization
     def get(self, request, *args, **kwargs):
@@ -96,13 +96,14 @@ class MerchandiseRestfulDetail(MultipleFieldLookupMixin, RetrieveAPIView):
 ## Update
 class MerchandiseRestfulUpdate(MultipleFieldLookupMixin, UpdateAPIView):
     permission_classes = [AllowAny]
-    lookup_field = 'id'
+    lookup_fields = ['User_pk', 'id']
     queryset = Merchandise.objects.all()
     serializer_class = MerchandiseSerializer
     
     @csrf_exempt
     @jwt_authorization
     def put(self, request, *args, **kwargs):
+        print("Merchandise Update inn")
         request.data['User_pk'] = int(str(request.user))
         self.update(request, *args, **kwargs)
         return JsonResponse({'message': 'MERCHANDISE UPDATE SUCCESS'}, status=201)
@@ -111,13 +112,14 @@ class MerchandiseRestfulUpdate(MultipleFieldLookupMixin, UpdateAPIView):
 ## Delete
 class MerchandiseRestfulDelete(MultipleFieldLookupMixin, DestroyAPIView):
     permission_classes = [AllowAny]
-    lookup_field = 'id'
+    lookup_fields = ['User_pk', 'id']
     queryset = Merchandise.objects.all()
     serializer_class = MerchandiseSerializer
     
     @csrf_exempt
     @jwt_authorization
     def delete(self, request, *args, **kwargs):
+        print("Merchandise Update inn")
         request.data['User_pk'] = int(str(request.user))
         self.destroy(request, *args, **kwargs)
         return JsonResponse({'message': 'MERCHANDISE DELETION SUCCESS'}, status=201)

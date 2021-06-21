@@ -6,8 +6,10 @@ from .models import User
 import json
 
 def jwt_publish(kakao_id, access_token):
+    print("jwt exp: ", my_settings.JWT_AUTH['JWT_EXPIRATION_DELTA'])
     access_jwt = jwt.encode({'exp': my_settings.JWT_AUTH['JWT_EXPIRATION_DELTA'], 'kakao_id': kakao_id}, my_settings.JWT_AUTH['JWT_SECRET_KEY']+access_token, algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
     access_jwt = access_jwt.decode('utf-8')
+    print("access_jwt: ", access_jwt)
     return access_jwt
 
 def jwt_authorization(func):
