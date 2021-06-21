@@ -149,7 +149,7 @@ def kakao_login(request):
         except KeyError:
             return JsonResponse({"message": "KAKAO PROFILE KEY ERROR"}, status=400)
         ## create
-        expiration = my_settings.JWT_AUTH['JWT_EXPIRATION_DELTA']
+        expiration = datetime.datetime.utcnow() + datetime.timedelta(seconds=21599) # error log: if use it from my_settings, it makes error: it doesnt apply server time
         if len(User_search) == 0:
             User.objects.create(kakao_id=kakao_id, nickname=nickname)
             access_jwt = jwt_publish(kakao_id, access_token, expiration)
