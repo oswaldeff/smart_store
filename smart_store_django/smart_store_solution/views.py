@@ -149,13 +149,13 @@ def kakao_login(request):
         except KeyError:
             return JsonResponse({"message": "KAKAO PROFILE KEY ERROR"}, status=400)
         ## create
-        period = datetime.datetime.utcnow() + datetime.timedelta(seconds=21599)
+        expiration = my_settings.JWT_AUTH['JWT_EXPIRATION_DELTA']
         if len(User_search) == 0:
             User.objects.create(kakao_id=kakao_id, nickname=nickname)
-            access_jwt = jwt_publish(kakao_id, access_token, period)
+            access_jwt = jwt_publish(kakao_id, access_token, expiration)
         ## login
         if len(User_search) != 0:
-            access_jwt = jwt_publish(kakao_id, access_token, period)
+            access_jwt = jwt_publish(kakao_id, access_token, expiration)
         # headers
         headers = {'message': 'LOGIN SUCCESS','Authorization': f'jwt {access_jwt}'}
         # response

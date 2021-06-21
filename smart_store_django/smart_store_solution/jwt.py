@@ -5,8 +5,8 @@ from django.http import JsonResponse
 from .models import User
 import json
 
-def jwt_publish(kakao_id, access_token, period):
-    access_jwt = jwt.encode({'exp': period, 'kakao_id': kakao_id}, my_settings.JWT_AUTH['JWT_SECRET_KEY']+access_token, algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
+def jwt_publish(kakao_id, access_token, expiration):
+    access_jwt = jwt.encode({'exp': expiration, 'kakao_id': kakao_id}, my_settings.JWT_AUTH['JWT_SECRET_KEY']+access_token, algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
     access_jwt = access_jwt.decode('utf-8')
     return access_jwt
 
