@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.views.decorators.csrf import csrf_exempt
 from .jwt import jwt_publish, jwt_authorization
+import datetime
 
 # Create your views here.
 
@@ -119,7 +120,7 @@ class MerchandiseRestfulDelete(MultipleFieldLookupMixin, DestroyAPIView):
     @csrf_exempt
     @jwt_authorization
     def delete(self, request, *args, **kwargs):
-        print("Merchandise Update inn")
+        print("Merchandise Delete inn")
         request.data['User_pk'] = int(str(request.user))
         self.destroy(request, *args, **kwargs)
         return JsonResponse({'message': 'MERCHANDISE DELETION SUCCESS'}, status=201)
@@ -157,6 +158,7 @@ def kakao_login(request):
         if len(User_search) != 0:
             access_jwt = jwt_publish(kakao_id, access_token)
         print('access_jwt: ', access_jwt)
+        print('datetime now: ', datetime.datetime.utcnow() + datetime.timedelta(seconds=21599))
         # headers
         headers = {'message': 'LOGIN SUCCESS','Authorization': f'jwt {access_jwt}'}
         # response
