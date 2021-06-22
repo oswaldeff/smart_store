@@ -72,11 +72,21 @@ class MerchandiseRestfulMain(ListAPIView):
     @csrf_exempt
     @jwt_authorization
     def get(self, request, *args, **kwargs):
+        # present_page = request.GET.get("page", 1)
+        # size_per_page = request.GET.get("size", 1)
+        present_page = 4
+        size_per_page = 2
+        limit = int(present_page * size_per_page)
+        offset = int(limit - size_per_page)
+        cnt = len(Merchandise.objects.filter(User_pk=request.user)[offset:limit])
+        print("cnt: ", cnt)
+        print("M: ", Merchandise.objects.filter(User_pk=request.user)[offset:limit])
         datas = []
-        for m in Merchandise.objects.filter(User_pk=request.user):
+        for m in Merchandise.objects.filter(User_pk=request.user)[offset:limit]:
+            print("m: ", m)
             serializer = self.serializer_class(m)
             datas.append(serializer.data)
-        return Response(datas, status=200)
+        return JsonResponse({'count': cnt, 'list': datas}, status=200)
 
 class MerchandiseRestfulDetail(MultipleFieldLookupMixin, RetrieveAPIView):
     permission_classes = [AllowAny]

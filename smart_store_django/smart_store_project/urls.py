@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from smart_store_solution import views, tests
+from .settings import DEBUG
 
 urlpatterns = [
     path('admin', admin.site.urls),
@@ -25,14 +26,20 @@ urlpatterns = [
     # merchandise
     path('merchandises', views.MerchandiseRestfulMain.as_view(), name='Merchandise_list'),
     path('merchandises/update', views.MerchandiseRestfulCreate.as_view(), name='Merchandise_create'),
-    # path('merchandises/detail/<User_pk>/<id>', views.MerchandiseRestfulDetail.as_view(), name='Merchandise_detail'),
+    #path('merchandises/detail/<User_pk>/<id>', views.MerchandiseRestfulDetail.as_view(), name='Merchandise_detail'),
     path('merchandises/update/<id>', views.MerchandiseRestfulUpdate.as_view(), name='Merchandise_update'),
     path('merchandises/delete/<id>', views.MerchandiseRestfulDelete.as_view(), name='Merchandise_delete'),
     
-    # kakao login & logout, user delete
-    path('accounts/login/kakao/test', tests.kakao_login_test, name='kakao_login_test'),
-    path('accounts/login/kakao/callback/test', tests.kakao_callback_test, name='kakao_callback_test'),
+    # kakao login, user delete
     path('accounts/login/kakao', views.kakao_login, name='kakao_login'),
-    # path('accounts/logout/kakao', views.kakao_logout, name='kakao_logout'),
+    #path('accounts/logout/kakao', views.kakao_logout, name='kakao_logout'),
     path('accounts/delete', views.User_delete, name='User_delete'),
 ]
+
+# Dev
+if DEBUG == True:
+    urlDev = [
+        path('accounts/login/kakao/test', tests.kakao_login_test, name='kakao_login_test'),
+        path('accounts/login/kakao/callback/test', tests.kakao_callback_test, name='kakao_callback_test'),
+    ]
+    urlpatterns += urlDev
