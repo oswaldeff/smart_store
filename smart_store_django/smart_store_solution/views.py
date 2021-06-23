@@ -78,7 +78,7 @@ class MerchandiseRestfulMain(ListAPIView):
         
         limit = None
         if request.GET.get('limit'):
-            limit = request.GET.get('limit')
+            limit = int(request.GET.get('limit'))
         
         Merchandise_obj = Merchandise.objects.filter(User_pk=request.user)[offset:limit]
         datas = []
