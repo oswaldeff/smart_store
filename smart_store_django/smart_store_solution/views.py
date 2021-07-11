@@ -58,9 +58,12 @@ class MerchandiseRestfulCreate(CreateAPIView):
     @csrf_exempt
     @jwt_authorization
     def post(self, request, *args, **kwargs):
-        request.data['User_pk'] = int(str(request.user))
-        self.create(request, *args, **kwargs)
-        return JsonResponse({'message': 'MERCHANDISE CREATION SUCCESS'}, status=201)
+        try:
+            request.data['User_pk'] = int(str(request.user))
+            self.create(request, *args, **kwargs)
+            return JsonResponse({'message': '상품이 등록되었습니다.'}, json_dumps_params={'ensure_ascii': False}, status=201)
+        except:
+            return JsonResponse({'message': '상품등록을 실패하였습니다.'}, json_dumps_params={'ensure_ascii': False}, status=400)
 
 ## Read
 class MerchandiseRestfulMain(ListAPIView):
@@ -72,20 +75,24 @@ class MerchandiseRestfulMain(ListAPIView):
     @csrf_exempt
     @jwt_authorization
     def get(self, request, *args, **kwargs):
-        offset = None
-        if request.GET.get('offset'):
-            offset = int(request.GET.get('offset'))
-        
-        limit = None
-        if request.GET.get('limit'):
-            limit = int(request.GET.get('limit'))
-        
-        Merchandise_obj = Merchandise.objects.filter(User_pk=request.user)[offset:limit]
-        datas = []
-        for m in Merchandise_obj:
-            serializer = self.serializer_class(m)
-            datas.append(serializer.data)
-        return JsonResponse({'count': len(Merchandise_obj), 'list': datas}, status=200)
+        try:
+            offset = None
+            if request.GET.get('offset'):
+                offset = int(request.GET.get('offset'))
+            
+            limit = None
+            if request.GET.get('limit'):
+                limit = int(request.GET.get('limit'))
+            
+            Merchandise_obj_all = Merchandise.objects.filter(User_pk=request.user)
+            Merchandise_obj = Merchandise_obj_all[offset:offset+limit]
+            datas = []
+            for m in Merchandise_obj:
+                serializer = self.serializer_class(m)
+                datas.append(serializer.data)
+            return JsonResponse({'count': len(Merchandise_obj_all), 'list': datas}, status=200)
+        except:
+            return JsonResponse({'message': 'NOT FOUND'}, status=404)
 
 class MerchandiseRestfulDetail(MultipleFieldLookupMixin, RetrieveAPIView):
     permission_classes = [AllowAny]
@@ -113,10 +120,12 @@ class MerchandiseRestfulUpdate(UpdateAPIView): # MultipleFieldLookupMixin,
     @csrf_exempt
     @jwt_authorization
     def put(self, request, *args, **kwargs):
-        request.data['User_pk'] = int(str(request.user))
-        self.update(request, *args, **kwargs)
-        return JsonResponse({'message': 'MERCHANDISE UPDATE SUCCESS'}, status=201)
-
+        try:
+            request.data['User_pk'] = int(str(request.user))
+            self.update(request, *args, **kwargs)
+            return JsonResponse({'message': '상품 업데이트 내용이 저장되었습니다.'}, json_dumps_params={'ensure_ascii': False}, status=201)
+        except:
+            return JsonResponse({'message': '상품 업데이트를 실패하였습니다.'}, json_dumps_params={'ensure_ascii': False}, status=400)
 
 ## Delete
 class MerchandiseRestfulDelete(DestroyAPIView): # MultipleFieldLookupMixin,
@@ -128,9 +137,12 @@ class MerchandiseRestfulDelete(DestroyAPIView): # MultipleFieldLookupMixin,
     @csrf_exempt
     @jwt_authorization
     def delete(self, request, *args, **kwargs):
-        request.data['User_pk'] = int(str(request.user))
-        self.destroy(request, *args, **kwargs)
-        return JsonResponse({'message': 'MERCHANDISE DELETION SUCCESS'}, status=201)
+        try:
+            request.data['User_pk'] = int(str(request.user))
+            self.destroy(request, *args, **kwargs)
+            return JsonResponse({'message': '상품이 삭제되었습니다.'}, json_dumps_params={'ensure_ascii': False}, status=201)
+        except:
+            return JsonResponse({'message': '상품 삭제를 실패하였습니다.'}, json_dumps_params={'ensure_ascii': False}, status=400)
 
 # social login(kakao)
 ## login
@@ -165,9 +177,9 @@ def kakao_login(request):
         if len(User_search) != 0:
             access_jwt = jwt_publish(kakao_id)
         # headers
-        headers = {'message': 'LOGIN SUCCESS','Authorization': f'jwt {access_jwt}'}
+        headers = {'message': '로그인 되었습니다.','Authorization': f'jwt {access_jwt}'}
         # response
-        response = JsonResponse(headers, status=201)
+        response = JsonResponse(headers, json_dumps_params={'ensure_ascii': False}, status=201)
         response.set_cookie('access_jwt', value=access_jwt, max_age=60*60*24*7, expires=None, path='/', domain='.amazonaws.com', httponly=False, samesite='None')
         return response
     else:

@@ -18,9 +18,12 @@ def jwt_authorization(func):
             # access_jwt
             try:
                 Authorization = request.headers['Authorization']
-                access_jwt = Authorization.split("jwt ")[1]
+                if "jwt " in Authorization: 
+                    access_jwt = Authorization.split("jwt ")[1]
+                else:
+                    return JsonResponse({'message': '로그인 해주세요.'},  json_dumps_params={'ensure_ascii': False}, status=400)
             except KeyError:
-                return JsonResponse({"message": "HEADERS JWT KEY ERROR"}, status=400)
+                return JsonResponse({'message': 'HEADERS JWT KEY ERROR'}, status=400)
             # decode
             payload = jwt.decode(access_jwt, my_settings.JWT_AUTH['JWT_SECRET_KEY'], algorithm=my_settings.JWT_AUTH['JWT_ALGORITHM'])
             login_user = User.objects.get(kakao_id=payload['kakao_id'])
