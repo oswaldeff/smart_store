@@ -28,7 +28,7 @@ SECRET_KEY = KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['.amazonaws.com', '127.0.0.1', 'localhost', 'localhost:3000', 'localhost:8000', 'smartstore-test90.s3-website.ap-northeast-2.amazonaws.com']
+ALLOWED_HOSTS = ['.amazonaws.com', '127.0.0.1', 'localhost']
 
 # Application definition
 

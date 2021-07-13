@@ -30,7 +30,7 @@ def jwt_authorization(func):
             request.user = login_user
             return func(self, request, *args, **kwargs)
         except jwt.ExpiredSignatureError:
-            return JsonResponse({'message': 'JWTOKEN EXPIRED'}, status=401)
+            return JsonResponse({'message': '로그인이 만료되었으므로 재로그인 해주세요.'}, status=401)
         except jwt.InvalidTokenError:
             return JsonResponse({'message': 'INVALID JWTOKEN'}, status=401)
     return wrapper
